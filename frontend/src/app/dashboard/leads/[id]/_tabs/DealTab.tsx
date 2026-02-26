@@ -99,8 +99,26 @@ export default function DealTab({ leadId, onSaved }: DealTabProps) {
   }
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-    onSaved("Copied to clipboard")
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        onSaved("Copied to clipboard")
+      }).catch(() => {
+        onSaved("Failed to copy")
+      })
+    } else {
+      // Fallback for older browsers
+      const textArea = document.createElement("textarea")
+      textArea.value = text
+      document.body.appendChild(textArea)
+      textArea.select()
+      try {
+        document.execCommand("copy")
+        onSaved("Copied to clipboard")
+      } catch {
+        onSaved("Failed to copy")
+      }
+      document.body.removeChild(textArea)
+    }
   }
 
   return (
