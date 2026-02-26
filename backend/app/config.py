@@ -1,5 +1,10 @@
 from pydantic_settings import BaseSettings
 from typing import Optional
+import os
+from pathlib import Path
+
+# Ensure .env is loaded from the correct location
+ENV_FILE = Path(__file__).parent.parent.parent / ".env"
 
 
 class Settings(BaseSettings):
@@ -41,10 +46,18 @@ class Settings(BaseSettings):
     debug: bool = False
 
     class Config:
-        env_file = ".env"
+        env_file = str(ENV_FILE)
         env_file_encoding = "utf-8"
         case_sensitive = False
         extra = "ignore"
 
 
 settings = Settings()
+
+# Debug logging
+import sys
+print(f"🔍 DEBUG - Stripe key loaded: {bool(settings.stripe_secret_key)}", file=sys.stderr)
+if settings.stripe_secret_key:
+    print(f"✅ Stripe is configured: {settings.stripe_secret_key[:30]}...", file=sys.stderr)
+else:
+    print(f"❌ Stripe is NOT configured", file=sys.stderr)
