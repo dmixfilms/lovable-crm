@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # Carregar variáveis do .env
-export $(grep -v '^#' /Users/andersonvieira/Documents/lovable-crm/.env | xargs)
+set -a
+source /Users/andersonvieira/Documents/lovable-crm/.env
+set +a
 
 # Iniciar o backend
 cd /Users/andersonvieira/Documents/lovable-crm/backend

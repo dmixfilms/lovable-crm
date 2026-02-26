@@ -3,9 +3,13 @@ from typing import Optional
 import os
 from pathlib import Path
 
-# Ensure .env is loaded from the correct location
+# Load .env file explicitly
 ENV_FILE = Path(__file__).parent.parent.parent / ".env"
-
+try:
+    from dotenv import load_dotenv
+    load_dotenv(dotenv_path=ENV_FILE, override=True)
+except ImportError:
+    pass
 
 class Settings(BaseSettings):
     # Security
