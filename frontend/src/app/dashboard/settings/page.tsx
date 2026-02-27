@@ -1,13 +1,28 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { getLovablePrompt, saveLovablePrompt, getDefaultLovablePrompt } from "@/lib/lovablePrompt"
 
 export default function SettingsPage() {
   const [saved, setSaved] = useState(false)
+  const [lovablePrompt, setLovablePrompt] = useState("")
+
+  useEffect(() => {
+    // Load prompt from localStorage on mount
+    const prompt = getLovablePrompt()
+    setLovablePrompt(prompt)
+  }, [])
 
   const handleSave = () => {
+    // Save prompt to localStorage
+    saveLovablePrompt(lovablePrompt)
     setSaved(true)
     setTimeout(() => setSaved(false), 3000)
+  }
+
+  const handleResetPrompt = () => {
+    const defaultPrompt = getDefaultLovablePrompt()
+    setLovablePrompt(defaultPrompt)
   }
 
   return (
@@ -127,6 +142,37 @@ export default function SettingsPage() {
               />
               <p className="text-xs text-slate-500 mt-1">
                 How many days before a preview expires
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-slate-200 pt-6">
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">🚀 Lovable Prompt</h2>
+          <div className="space-y-4">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-slate-700">
+                  Prompt Sent to Lovable
+                </label>
+                <button
+                  onClick={handleResetPrompt}
+                  className="text-xs text-slate-500 hover:text-slate-700 border-b border-dotted hover:border-solid"
+                >
+                  Reset to Default
+                </button>
+              </div>
+              <textarea
+                value={lovablePrompt}
+                onChange={(e) => setLovablePrompt(e.target.value)}
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-xs h-64 resize-vertical"
+                placeholder="Enter your Lovable prompt..."
+              />
+              <p className="text-xs text-slate-500 mt-2">
+                💡 <span className="font-semibold">Pro tip:</span> Use {`{{business_name}}, {{owner_name}}, {{suburb}}, {{phone}}, {{website_url}}`} as variables. They'll be auto-filled when you create a preview.
+              </p>
+              <p className="text-xs text-amber-700 mt-2 bg-amber-50 p-2 rounded">
+                This prompt is sent to Lovable when you click "Criar com Lovable" button. Improve it over time to get better results!
               </p>
             </div>
           </div>

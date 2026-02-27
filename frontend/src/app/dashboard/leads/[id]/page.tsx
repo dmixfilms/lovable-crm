@@ -7,6 +7,7 @@ import * as Tabs from "@radix-ui/react-tabs"
 import { useLead, useApproveLead, useRejectLead, useGenerateLovableUrl } from "@/hooks/useLeads"
 import StatusBadge from "@/components/ui/StatusBadge"
 import Toast from "@/components/ui/Toast"
+import { getLovablePrompt, renderPrompt } from "@/lib/lovablePrompt"
 import { useQueryClient } from "@tanstack/react-query"
 import OverviewTab from "./_tabs/OverviewTab"
 import TasksTab from "./_tabs/TasksTab"
@@ -64,7 +65,19 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
   }
 
   const handleStartLovableDevelopment = () => {
-    generateLovableUrl.mutate(id, {
+    // Get custom prompt from localStorage
+    const customPrompt = getLovablePrompt()
+
+    // Render prompt with lead data
+    const renderedPrompt = renderPrompt(customPrompt, {
+      business_name: lead?.business_name,
+      owner_name: lead?.owner_name,
+      suburb: lead?.suburb,
+      phone: lead?.phone,
+      website_url: lead?.website_url,
+    })
+
+    generateLovableUrl.mutate({ id, prompt: renderedPrompt }, {
       onSuccess: (data) => {
         setToast({ message: "Abrindo Lovable para criar o website...", type: "success" })
         // Open directly

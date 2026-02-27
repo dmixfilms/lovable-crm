@@ -81,8 +81,10 @@ export function useRejectLead() {
 
 export function useGenerateLovableUrl() {
   return useMutation({
-    mutationFn: async (id: string) => {
-      const { data } = await api.post(`/leads/${id}/generate-lovable-url`)
+    mutationFn: async ({ id, prompt }: { id: string; prompt?: string }) => {
+      const { data } = await api.post(`/leads/${id}/generate-lovable-url`,
+        prompt ? { prompt } : {}
+      )
       return data as {
         lovable_url: string
         lead_id: string
