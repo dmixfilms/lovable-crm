@@ -12,7 +12,6 @@ const ACTIVE_STATUSES = [
   "NEW_CAPTURED",
   "HIGH_PRIORITY",
   "MEDIUM_PRIORITY",
-  "LOW_PRIORITY",
   "PREVIEW_PENDING",
   "SAMPLE_SENT",
   "PRICE_SENT",
@@ -42,6 +41,7 @@ export default function LeadsPage() {
     sourceStatus: string
   } | null>(null)
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null)
+  const [showArchived, setShowArchived] = useState(false)
 
   // Extract leads array from response
   const data = leadsResponse?.items || []
@@ -111,6 +111,9 @@ export default function LeadsPage() {
     leads: columns[status] || [],
   }))
 
+  // Extract archived leads (LOW_PRIORITY / Good Site)
+  const archivedLeads = data.filter((lead) => lead.status_pipeline === "LOW_PRIORITY")
+
   return (
     <div className="space-y-6">
       <div>
@@ -140,6 +143,36 @@ export default function LeadsPage() {
         onConfirm={handleConfirmMove}
         onCancel={handleCancelMove}
       />
+
+      {/* Archived Leads Section */}
+      {archivedLeads.length > 0 && (
+        <div className="mt-8 border-t pt-6">
+          <button
+            onClick={() => setShowArchived(!showArchived)}
+            className="flex items-center gap-2 text-red-700 font-semibold hover:text-red-800 transition-colors"
+          >
+            {showArchived ? "▼" : "▶"} 📋 Good Site ({archivedLeads.length}) - {showArchived ? "Hide" : "Show"}
+          </button>
+
+          {showArchived && (
+            <div className="mt-4 space-y-2 bg-red-50 border border-red-200 rounded-lg p-4">
+              {archivedLeads.map((lead) => (
+                <div
+                  key={lead.id}
+                  className="flex items-center justify-between p-3 bg-white rounded border border-red-100 hover:shadow-sm transition-shadow cursor-pointer"
+                  onClick={() => window.location.href = `/dashboard/leads/${lead.id}`}
+                >
+                  <div className="flex-1">
+                    <p className="font-medium text-slate-900">{lead.business_name}</p>
+                    {lead.suburb && <p className="text-xs text-slate-500">{lead.suburb}</p>}
+                  </div>
+                  <span className="text-2xl">✅</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
