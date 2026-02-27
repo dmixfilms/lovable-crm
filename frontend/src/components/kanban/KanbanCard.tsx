@@ -43,7 +43,11 @@ export default function KanbanCard({ lead, index }: KanbanCardProps) {
           </div>
 
           <h3 className="font-semibold text-slate-900 text-sm mb-2 truncate pr-24">{lead.business_name}</h3>
-          {lead.suburb && <p className="text-xs text-slate-500 mb-3">{lead.suburb}</p>}
+          {lead.suburb && <p className="text-xs text-slate-500 mb-1">{lead.suburb}</p>}
+          {lead.phone && <p className="text-xs text-slate-500 mb-1">📞 {lead.phone}</p>}
+          {lead.emails && lead.emails.length > 0 && (
+            <p className="text-xs text-slate-500 mb-3 truncate">📧 {lead.emails[0]}</p>
+          )}
 
           {/* Notes Badge */}
           {lead.notes && (

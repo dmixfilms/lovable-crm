@@ -40,6 +40,12 @@ export default function OverviewTab({ lead, onSaved, onError }: OverviewTabProps
     { key: "industry_category", label: "Industry" },
   ]
 
+  const handleEmailChange = (email: string) => {
+    const newEmails = email ? [email] : []
+    setForm((prev) => ({ ...prev, emails: newEmails }))
+    setIsDirty(true)
+  }
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-6">
@@ -55,6 +61,18 @@ export default function OverviewTab({ lead, onSaved, onError }: OverviewTabProps
             />
           </div>
         ))}
+
+        {/* Email field */}
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-2">Email</label>
+          <input
+            type="email"
+            value={form.emails?.[0] || ""}
+            onChange={(e) => handleEmailChange(e.target.value)}
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+            placeholder="email@example.com"
+          />
+        </div>
       </div>
 
       <div>
