@@ -9,9 +9,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ detail: "No token provided" }, { status: 401 })
     }
 
-    // Get the backend URL from hostname
-    const hostname = request.headers.get("host")?.split(":")[0] || "localhost"
-    const backendUrl = `http://${hostname}:8000/auth/me`
+    // Get the backend URL - always use localhost for backend
+    const backendUrl = `http://localhost:8000/auth/me`
 
     console.log("🔐 Proxy /api/auth/me: Forwarding to", backendUrl)
     console.log("🔐 Proxy /api/auth/me: Authorization header:", token.substring(0, 20) + "...")

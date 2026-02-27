@@ -4,9 +4,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
-    // Get the backend URL from hostname
-    const hostname = request.headers.get("host")?.split(":")[0] || "localhost"
-    const backendUrl = `http://${hostname}:8000/auth/login`
+    // Get the backend URL - always use localhost for backend
+    const backendUrl = `http://localhost:8000/auth/login`
 
     console.log("🔐 Proxy: Forwarding login to", backendUrl)
 
