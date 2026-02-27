@@ -10,6 +10,9 @@ import { Lead } from "@/types/index"
 
 const ACTIVE_STATUSES = [
   "NEW_CAPTURED",
+  "HIGH_PRIORITY",
+  "MEDIUM_PRIORITY",
+  "LOW_PRIORITY",
   "APPROVED",
   "PREVIEW_PENDING",
   "SAMPLE_SENT",
@@ -19,7 +22,10 @@ const ACTIVE_STATUSES = [
 ]
 
 const STATUS_DISPLAY_NAMES: Record<string, string> = {
-  "NEW_CAPTURED": "New Captured",
+  "NEW_CAPTURED": "New Lead",
+  "HIGH_PRIORITY": "No Website",
+  "MEDIUM_PRIORITY": "Need Update",
+  "LOW_PRIORITY": "Good Site",
   "APPROVED": "APPROVED",
   "PREVIEW_PENDING": "SENT PREVIEW",
   "SAMPLE_SENT": "SENT LINK",
