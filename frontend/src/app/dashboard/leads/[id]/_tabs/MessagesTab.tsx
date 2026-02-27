@@ -2,6 +2,8 @@
 import { useState } from "react"
 import { useMessages, useSendMessage } from "@/hooks/useMessages"
 import { useTemplates } from "@/hooks/useTemplates"
+import { usePreviews } from "@/hooks/usePreviews"
+import { useDeal } from "@/hooks/useDeal"
 import { Lead } from "@/types/index"
 
 interface MessagesTabProps {
@@ -13,6 +15,8 @@ interface MessagesTabProps {
 export default function MessagesTab({ leadId, lead, onSaved }: MessagesTabProps) {
   const { data: messages = [] } = useMessages(leadId)
   const { data: templates = [] } = useTemplates()
+  const { data: previews = [] } = usePreviews(leadId)
+  const { data: deal } = useDeal(leadId)
   const sendMessage = useSendMessage(leadId)
 
   const [channel, setChannel] = useState<"EMAIL" | "INSTAGRAM" | "SMS">("EMAIL")
@@ -24,14 +28,34 @@ export default function MessagesTab({ leadId, lead, onSaved }: MessagesTabProps)
     template_id: "",
   })
 
-  // Helper to render message with lead data
+  // Helper to render message with lead data and all available fields
   const renderTemplate = (body: string): string => {
     let rendered = body
+
+    // Lead data
     rendered = rendered.replace(/\{\{business_name\}\}/g, lead.business_name || "")
     rendered = rendered.replace(/\{\{owner_name\}\}/g, lead.owner_name || "")
     rendered = rendered.replace(/\{\{suburb\}\}/g, lead.suburb || "")
     rendered = rendered.replace(/\{\{phone\}\}/g, lead.phone || "")
     rendered = rendered.replace(/\{\{website_url\}\}/g, lead.website_url || "")
+    rendered = rendered.replace(/\{\{email\}\}/g, lead.emails?.[0] || "")
+
+    // Preview data
+    const activePreview = previews?.find(p => !p.is_archived)
+    const previewUrl = activePreview?.preview_url || ""
+    rendered = rendered.replace(/\{\{preview_url\}\}/g, previewUrl)
+
+    // Deal data
+    const quotedPrice = deal?.quoted_price_aud ? `A$${deal.quoted_price_aud.toFixed(2)}` : ""
+    rendered = rendered.replace(/\{\{quoted_price\}\}/g, quotedPrice)
+
+    const finalPrice = deal?.final_price_aud ? `A$${deal.final_price_aud.toFixed(2)}` : ""
+    rendered = rendered.replace(/\{\{final_price\}\}/g, finalPrice)
+    rendered = rendered.replace(/\{\{final_price_aud\}\}/g, finalPrice)
+
+    const paymentLink = deal?.payment_link || ""
+    rendered = rendered.replace(/\{\{payment_link\}\}/g, paymentLink)
+
     return rendered
   }
 
