@@ -15,6 +15,7 @@ export default function MessagesTab({ leadId, lead, onSaved }: MessagesTabProps)
   const { data: templates = [] } = useTemplates()
   const sendMessage = useSendMessage(leadId)
 
+  const [channel, setChannel] = useState<"EMAIL" | "INSTAGRAM" | "SMS">("EMAIL")
   const [showCompose, setShowCompose] = useState(false)
   const [form, setForm] = useState({
     channel: "EMAIL",
@@ -23,74 +24,188 @@ export default function MessagesTab({ leadId, lead, onSaved }: MessagesTabProps)
     template_id: "",
   })
 
+  // Helper to render message with lead data
+  const renderTemplate = (body: string): string => {
+    let rendered = body
+    rendered = rendered.replace(/\{\{business_name\}\}/g, lead.business_name || "")
+    rendered = rendered.replace(/\{\{owner_name\}\}/g, lead.owner_name || "")
+    rendered = rendered.replace(/\{\{suburb\}\}/g, lead.suburb || "")
+    rendered = rendered.replace(/\{\{phone\}\}/g, lead.phone || "")
+    rendered = rendered.replace(/\{\{website_url\}\}/g, lead.website_url || "")
+    return rendered
+  }
+
   const handleTemplateSelect = (templateId: string) => {
     const template = templates.find((t) => t.id === templateId)
     if (!template) return
-
-    let body = template.body
-    // Replace variables with actual lead data
-    body = body.replace(/\{\{business_name\}\}/g, lead.business_name || "")
-    body = body.replace(/\{\{owner_name\}\}/g, lead.owner_name || "")
-    body = body.replace(/\{\{suburb\}\}/g, lead.suburb || "")
-    body = body.replace(/\{\{phone\}\}/g, lead.phone || "")
-    body = body.replace(/\{\{website_url\}\}/g, lead.website_url || "")
-    // Keep unmatched variables as-is
-    // body = body.replace(/\{\{preview_url\}\}/g, "{{preview_url}}")
-    // body = body.replace(/\{\{quoted_price\}\}/g, "{{quoted_price}}")
-
+    const body = renderTemplate(template.body)
     setForm({ ...form, template_id: templateId, body_rendered: body })
   }
 
   const handleSend = () => {
     if (!form.to_address || !form.body_rendered) return
-    console.log("📤 Sending message:", { ...form, leadId })
     sendMessage.mutate(form, {
-      onSuccess: (data) => {
-        console.log("✅ Message sent successfully:", data)
+      onSuccess: () => {
         setShowCompose(false)
         setForm({ channel: "EMAIL", to_address: lead.emails?.[0] || "", body_rendered: "", template_id: "" })
         onSaved("✅ Message sent successfully!")
       },
-      onError: (error) => {
-        console.error("❌ Error sending message:", error)
+      onError: () => {
         onSaved("❌ Error sending message")
       }
     })
   }
 
+  const copyToClipboard = (text: string) => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        onSaved("✅ Copied to clipboard!")
+      }).catch(() => {
+        onSaved("Failed to copy")
+      })
+    } else {
+      const textArea = document.createElement("textarea")
+      textArea.value = text
+      document.body.appendChild(textArea)
+      textArea.select()
+      try {
+        document.execCommand("copy")
+        onSaved("✅ Copied to clipboard!")
+      } catch {
+        onSaved("Failed to copy")
+      }
+      document.body.removeChild(textArea)
+    }
+  }
+
+  const isInstagram = channel === "INSTAGRAM"
+  const instagramTemplates = templates.filter((t) => t.channel === "INSTAGRAM")
+  const emailTemplates = templates.filter((t) => t.channel === "EMAIL")
+
+  // INSTAGRAM VIEW - Quick copy interface
+  if (isInstagram && !showCompose) {
+    return (
+      <div className="space-y-4">
+        <div className="flex gap-3">
+          <button
+            onClick={() => setChannel("EMAIL")}
+            className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-100 transition-colors font-medium"
+          >
+            📧 Email
+          </button>
+          <button
+            onClick={() => setShowCompose(true)}
+            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+          >
+            + Custom Message
+          </button>
+        </div>
+
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+          <p className="text-sm text-blue-800">
+            💡 <span className="font-semibold">Instagram Quick Copy:</span> Click any message to copy. Then paste in Instagram DM.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3">
+          {instagramTemplates.map((template) => {
+            const rendered = renderTemplate(template.body)
+            return (
+              <button
+                key={template.id}
+                onClick={() => copyToClipboard(rendered)}
+                className="text-left p-4 bg-gradient-to-br from-pink-50 to-orange-50 border border-pink-200 rounded-lg hover:shadow-md hover:border-pink-400 transition-all cursor-pointer group"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <span className="font-semibold text-pink-900">{template.name}</span>
+                  <span className="text-lg opacity-0 group-hover:opacity-100 transition-opacity">📋 Copy</span>
+                </div>
+                <p className="text-sm text-slate-700 whitespace-pre-wrap line-clamp-4">{rendered}</p>
+                <p className="text-xs text-slate-500 mt-2 opacity-75">Click to copy to clipboard</p>
+              </button>
+            )
+          })}
+        </div>
+
+        {messages.length > 0 && (
+          <div className="space-y-3 pt-4 border-t border-slate-200">
+            <p className="text-sm font-semibold text-slate-700">📬 Sent Messages ({messages.length})</p>
+            {messages.filter(m => m.channel === "INSTAGRAM").map((message) => (
+              <div key={message.id} className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                <div className="flex items-start justify-between mb-2">
+                  <span className="text-xs font-semibold text-slate-600">
+                    {new Date(message.created_at).toLocaleDateString()}
+                  </span>
+                  <span className="text-xs font-semibold px-2 py-1 bg-green-100 text-green-800 rounded">✅ Copied</span>
+                </div>
+                <p className="text-xs text-slate-700 whitespace-pre-wrap">{message.body_rendered}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // EMAIL/SMS VIEW - Normal compose interface
   return (
     <div className="space-y-6">
       {!showCompose ? (
-        <button
-          onClick={() => setShowCompose(true)}
-          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
-        >
-          + Compose Message
-        </button>
+        <div className="flex gap-3">
+          {channel === "INSTAGRAM" && (
+            <button
+              onClick={() => setChannel("EMAIL")}
+              className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-100 transition-colors font-medium"
+            >
+              Back to Instagram
+            </button>
+          )}
+          {channel !== "INSTAGRAM" && (
+            <>
+              <button
+                onClick={() => setChannel("INSTAGRAM")}
+                className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-100 transition-colors font-medium"
+              >
+                📸 Instagram Quick Mode
+              </button>
+              <button
+                onClick={() => setShowCompose(true)}
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+              >
+                + Compose Message
+              </button>
+            </>
+          )}
+        </div>
       ) : (
         <div className="space-y-4 p-4 bg-slate-50 rounded-lg">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">Channel</label>
             <select
               value={form.channel}
-              onChange={(e) => setForm({ ...form, channel: e.target.value })}
+              onChange={(e) => {
+                setForm({ ...form, channel: e.target.value as any })
+              }}
               className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
-              <option value="EMAIL">Email</option>
-              <option value="INSTAGRAM">Instagram</option>
-              <option value="SMS">SMS</option>
+              <option value="EMAIL">📧 Email</option>
+              <option value="SMS">💬 SMS</option>
+              <option value="INSTAGRAM">📸 Instagram</option>
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">To</label>
-            <input
-              type="text"
-              value={form.to_address}
-              onChange={(e) => setForm({ ...form, to_address: e.target.value })}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
-          </div>
+          {form.channel !== "INSTAGRAM" && (
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">To</label>
+              <input
+                type="text"
+                value={form.to_address}
+                onChange={(e) => setForm({ ...form, to_address: e.target.value })}
+                placeholder={form.channel === "EMAIL" ? "email@example.com" : "Phone number"}
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">Template (optional)</label>
@@ -100,17 +215,11 @@ export default function MessagesTab({ leadId, lead, onSaved }: MessagesTabProps)
               className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
               <option value="">Choose a template...</option>
-              {templates
-                .filter((t) => {
-                  if (form.channel === "EMAIL") return t.channel === "EMAIL"
-                  if (form.channel === "INSTAGRAM") return t.channel === "INSTAGRAM"
-                  return t.channel === form.channel
-                })
-                .map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.name}
-                  </option>
-                ))}
+              {(form.channel === "EMAIL" ? emailTemplates : instagramTemplates).map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -126,7 +235,7 @@ export default function MessagesTab({ leadId, lead, onSaved }: MessagesTabProps)
           <div className="flex gap-3">
             <button
               onClick={handleSend}
-              disabled={sendMessage.isPending || !form.to_address || !form.body_rendered}
+              disabled={sendMessage.isPending || (form.channel !== "INSTAGRAM" && !form.to_address) || !form.body_rendered}
               className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-400 transition-colors font-medium flex items-center gap-2"
             >
               {sendMessage.isPending ? (
@@ -148,13 +257,11 @@ export default function MessagesTab({ leadId, lead, onSaved }: MessagesTabProps)
         </div>
       )}
 
-      {messages.length === 0 ? (
-        <p className="text-slate-500 text-center py-8">No messages yet</p>
-      ) : (
+      {!isInstagram && messages.length > 0 && (
         <div className="space-y-3">
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-xs text-blue-800">
-              <span className="font-semibold">ℹ️ Info:</span> Messages are recorded in the system. For actual email/Instagram delivery, configure your email service (SendGrid, AWS SES, etc).
+              <span className="font-semibold">ℹ️ Info:</span> Messages are recorded in the system. For actual email/SMS delivery, configure your email service.
             </p>
           </div>
           <p className="text-sm text-slate-600 mb-2">📬 Message History ({messages.length})</p>
@@ -179,20 +286,17 @@ export default function MessagesTab({ leadId, lead, onSaved }: MessagesTabProps)
                 </div>
                 <div className="text-right">
                   <p className="text-xs text-slate-500">
-                    {new Date(message.created_at).toLocaleDateString()} {new Date(message.created_at).toLocaleTimeString()}
+                    {new Date(message.created_at).toLocaleDateString()}
                   </p>
-                  {message.sent_at && (
-                    <p className="text-xs text-green-600 mt-1">
-                      Sent: {new Date(message.sent_at).toLocaleDateString()}
-                    </p>
-                  )}
                 </div>
               </div>
-              <div className="mb-2 p-3 bg-slate-50 rounded border border-slate-200">
-                <p className="text-xs text-slate-500 mb-1">
-                  <span className="font-semibold">To:</span> {message.to_address}
-                </p>
-              </div>
+              {message.to_address && (
+                <div className="mb-2 p-3 bg-slate-50 rounded border border-slate-200">
+                  <p className="text-xs text-slate-500">
+                    <span className="font-semibold">To:</span> {message.to_address}
+                  </p>
+                </div>
+              )}
               <p className="text-sm text-slate-700 whitespace-pre-wrap">{message.body_rendered}</p>
             </div>
           ))}
