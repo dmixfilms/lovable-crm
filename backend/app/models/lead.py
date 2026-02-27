@@ -7,6 +7,9 @@ from app.database import Base
 
 class PipelineStatus(str, enum.Enum):
     NEW_CAPTURED = "NEW_CAPTURED"
+    HIGH_PRIORITY = "HIGH_PRIORITY"
+    MEDIUM_PRIORITY = "MEDIUM_PRIORITY"
+    LOW_PRIORITY = "LOW_PRIORITY"
     APPROVED = "APPROVED"
     REJECTED = "REJECTED"
     PREVIEW_PENDING = "PREVIEW_PENDING"
