@@ -145,6 +145,9 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
                     onSuccess: () => {
                       setToast({ message: "Lead classified as High Priority - No Website 🔥", type: "success" })
                       qc.invalidateQueries({ queryKey: ["lead", id] })
+                      setTimeout(() => {
+                        router.push("/dashboard/leads")
+                      }, 500)
                     }
                   })
                 }}
@@ -160,6 +163,9 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
                     onSuccess: () => {
                       setToast({ message: "Lead classified as Medium Priority - Outdated Site 📌", type: "success" })
                       qc.invalidateQueries({ queryKey: ["lead", id] })
+                      setTimeout(() => {
+                        router.push("/dashboard/leads")
+                      }, 500)
                     }
                   })
                 }}
@@ -175,6 +181,9 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
                     onSuccess: () => {
                       setToast({ message: "Lead classified as Low Priority - Already has good site ✅", type: "success" })
                       qc.invalidateQueries({ queryKey: ["lead", id] })
+                      setTimeout(() => {
+                        router.push("/dashboard/leads")
+                      }, 500)
                     }
                   })
                 }}
