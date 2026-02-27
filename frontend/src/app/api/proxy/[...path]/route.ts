@@ -46,11 +46,11 @@ async function handleProxyRequest(
     const pathStr = pathSegments.join("/")
 
     // Get the backend URL from hostname
-    const hostname = request.headers.get("host")?.split(":")[0] || "localhost"
+    const hostname = "localhost"  // Always use localhost for backend
     const queryString = request.nextUrl.search
     const backendUrl = `http://${hostname}:8000/${pathStr}${queryString}`
 
-    console.log(`🔐 Proxy [${method}]: Forwarding to ${backendUrl}`)
+    console.log(`🔐 Proxy [${method}]: ${pathStr} → ${backendUrl}`)
 
     // Get request body if exists
     let body: any = undefined
@@ -75,15 +75,22 @@ async function handleProxyRequest(
       ...(body && { body: JSON.stringify(body) }),
     })
 
-    const data = await response.json()
+    let data
+    try {
+      data = await response.json()
+    } catch {
+      data = { detail: "Invalid response from backend" }
+    }
 
     if (!response.ok) {
+      console.error(`❌ Proxy [${method}] ${response.status}: ${JSON.stringify(data)}`)
       return NextResponse.json(data, { status: response.status })
     }
 
+    console.log(`✓ Proxy [${method}] ${response.status}: Success`)
     return NextResponse.json(data)
   } catch (error) {
     console.error("❌ Proxy error:", error)
-    return NextResponse.json({ detail: "Proxy error" }, { status: 500 })
+    return NextResponse.json({ detail: `Proxy error: ${error}` }, { status: 500 })
   }
 }
