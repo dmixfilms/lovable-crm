@@ -45,7 +45,14 @@ def run_daily_import_job(keywords=None, suburbs=None, limit=None, radius_meters=
                             continue
 
                         lead_data = service.map_to_lead_dict(place, details)
-                        lead = Lead(**lead_data, status_pipeline=PipelineStatus.NEW_CAPTURED)
+
+                        # Auto-classify based on website presence
+                        if lead_data.get('website_url'):
+                            status = PipelineStatus.NEW_CAPTURED  # Has website = manual review needed
+                        else:
+                            status = PipelineStatus.HIGH_PRIORITY  # No website = high potential
+
+                        lead = Lead(**lead_data, status_pipeline=status)
 
                         db.add(lead)
                         try:
