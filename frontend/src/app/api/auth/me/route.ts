@@ -16,15 +16,29 @@ export async function GET(request: NextRequest) {
     console.log("🔐 Proxy /api/auth/me: Authorization header:", token.substring(0, 20) + "...")
 
     // Forward to backend
-    const response = await fetch(backendUrl, {
-      method: "GET",
-      headers: {
-        Authorization: token,
-      },
-    })
+    let response
+    try {
+      response = await fetch(backendUrl, {
+        method: "GET",
+        headers: {
+          Authorization: token,
+        },
+      })
+    } catch (fetchError) {
+      console.error("❌ Proxy /api/auth/me: Fetch error:", fetchError)
+      return NextResponse.json({ detail: `Failed to reach backend: ${fetchError}` }, { status: 500 })
+    }
 
     console.log("🔐 Proxy /api/auth/me: Backend response status:", response.status)
-    const data = await response.json()
+
+    let data
+    try {
+      data = await response.json()
+    } catch (parseError) {
+      console.error("❌ Proxy /api/auth/me: JSON parse error:", parseError)
+      return NextResponse.json({ detail: "Invalid response from backend" }, { status: 500 })
+    }
+
     console.log("🔐 Proxy /api/auth/me: Backend response:", data)
 
     if (!response.ok) {
