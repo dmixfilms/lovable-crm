@@ -28,6 +28,14 @@ export default function MessagesTab({ leadId, lead, onSaved }: MessagesTabProps)
     template_id: "",
   })
 
+  // Helper to safely format currency
+  const formatPrice = (value: any): string => {
+    if (!value) return ""
+    const num = typeof value === "number" ? value : parseFloat(value)
+    if (isNaN(num)) return ""
+    return `A$${num.toFixed(2)}`
+  }
+
   // Helper to render message with lead data and all available fields
   const renderTemplate = (body: string): string => {
     let rendered = body
@@ -45,11 +53,11 @@ export default function MessagesTab({ leadId, lead, onSaved }: MessagesTabProps)
     const previewUrl = activePreview?.preview_url || ""
     rendered = rendered.replace(/\{\{preview_url\}\}/g, previewUrl)
 
-    // Deal data
-    const quotedPrice = deal?.quoted_price_aud ? `A$${deal.quoted_price_aud.toFixed(2)}` : ""
+    // Deal data - use safe formatting
+    const quotedPrice = formatPrice(deal?.quoted_price_aud)
     rendered = rendered.replace(/\{\{quoted_price\}\}/g, quotedPrice)
 
-    const finalPrice = deal?.final_price_aud ? `A$${deal.final_price_aud.toFixed(2)}` : ""
+    const finalPrice = formatPrice(deal?.final_price_aud)
     rendered = rendered.replace(/\{\{final_price\}\}/g, finalPrice)
     rendered = rendered.replace(/\{\{final_price_aud\}\}/g, finalPrice)
 
