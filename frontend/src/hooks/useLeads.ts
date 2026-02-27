@@ -79,6 +79,20 @@ export function useRejectLead() {
   })
 }
 
+export function useSetLeadPriority() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, priority }: { id: string; priority: "HIGH_PRIORITY" | "MEDIUM_PRIORITY" | "LOW_PRIORITY" }) => {
+      const { data } = await api.patch(`/leads/${id}/move`, null, { params: { new_status: priority } })
+      return data as Lead
+    },
+    onSuccess: (updated) => {
+      qc.invalidateQueries({ queryKey: ["leads"] })
+      qc.invalidateQueries({ queryKey: ["lead", updated.id] })
+    },
+  })
+}
+
 export function useGenerateLovableUrl() {
   return useMutation({
     mutationFn: async ({ id, prompt }: { id: string; prompt?: string }) => {

@@ -4,7 +4,7 @@ import { useState, use } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import * as Tabs from "@radix-ui/react-tabs"
-import { useLead, useApproveLead, useRejectLead, useGenerateLovableUrl } from "@/hooks/useLeads"
+import { useLead, useApproveLead, useRejectLead, useGenerateLovableUrl, useSetLeadPriority } from "@/hooks/useLeads"
 import StatusBadge from "@/components/ui/StatusBadge"
 import Toast from "@/components/ui/Toast"
 import { getLovablePrompt, renderPrompt } from "@/lib/lovablePrompt"
@@ -23,6 +23,7 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
   const approveLead = useApproveLead()
   const rejectLead = useRejectLead()
   const generateLovableUrl = useGenerateLovableUrl()
+  const setLeadPriority = useSetLeadPriority()
   const [activeTab, setActiveTab] = useState("overview")
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null)
 
@@ -131,29 +132,63 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-3 pt-4 border-t border-slate-200">
-          {/* Approval/Rejection Buttons - Only show for NEW_CAPTURED */}
+        <div className="flex gap-3 pt-4 border-t border-slate-200 flex-wrap">
+          {/* Priority Buttons - Only show for NEW_CAPTURED */}
           {lead.status_pipeline === "NEW_CAPTURED" && (
             <>
+              <div className="flex gap-2 items-center text-sm text-slate-600 mr-2">
+                <span>📊 Classification:</span>
+              </div>
               <button
-                onClick={handleApprove}
-                disabled={approveLead.isPending}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 transition-colors font-medium flex items-center gap-2"
+                onClick={() => {
+                  setLeadPriority.mutate({ id, priority: "HIGH_PRIORITY" }, {
+                    onSuccess: () => {
+                      setToast({ message: "Lead classified as High Priority - No Website 🔥", type: "success" })
+                      qc.invalidateQueries({ queryKey: ["lead", id] })
+                    }
+                  })
+                }}
+                disabled={setLeadPriority.isPending}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-400 transition-colors font-medium flex items-center gap-2 text-sm"
+                title="No website, only Instagram - High potential client"
               >
-                ✓ Aprovado
+                🔥 No Website
               </button>
               <button
-                onClick={handleReject}
-                disabled={rejectLead.isPending}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-400 transition-colors font-medium flex items-center gap-2"
+                onClick={() => {
+                  setLeadPriority.mutate({ id, priority: "MEDIUM_PRIORITY" }, {
+                    onSuccess: () => {
+                      setToast({ message: "Lead classified as Medium Priority - Outdated Site 📌", type: "success" })
+                      qc.invalidateQueries({ queryKey: ["lead", id] })
+                    }
+                  })
+                }}
+                disabled={setLeadPriority.isPending}
+                className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 disabled:bg-gray-400 transition-colors font-medium flex items-center gap-2 text-sm"
+                title="Has outdated website - Medium potential"
               >
-                ✕ Recusado
+                📌 Outdated Site
+              </button>
+              <button
+                onClick={() => {
+                  setLeadPriority.mutate({ id, priority: "LOW_PRIORITY" }, {
+                    onSuccess: () => {
+                      setToast({ message: "Lead classified as Low Priority - Already has good site ✅", type: "success" })
+                      qc.invalidateQueries({ queryKey: ["lead", id] })
+                    }
+                  })
+                }}
+                disabled={setLeadPriority.isPending}
+                className="px-4 py-2 bg-slate-500 text-white rounded-lg hover:bg-slate-600 disabled:bg-gray-400 transition-colors font-medium flex items-center gap-2 text-sm"
+                title="Has good website already - Not needed right now"
+              >
+                ✅ Good Site
               </button>
             </>
           )}
 
-          {/* Start Lovable Development - Only show for APPROVED */}
-          {lead.status_pipeline === "APPROVED" && (
+          {/* Start Lovable Development - Show for HIGH and MEDIUM priority */}
+          {(lead.status_pipeline === "HIGH_PRIORITY" || lead.status_pipeline === "MEDIUM_PRIORITY") && (
             <button
               onClick={handleStartLovableDevelopment}
               disabled={generateLovableUrl.isPending}

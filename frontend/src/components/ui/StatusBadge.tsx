@@ -4,6 +4,9 @@ interface StatusBadgeProps {
 
 const statusColors: Record<string, string> = {
   NEW_CAPTURED: "bg-blue-100 text-blue-800",
+  HIGH_PRIORITY: "bg-red-100 text-red-800",
+  MEDIUM_PRIORITY: "bg-amber-100 text-amber-800",
+  LOW_PRIORITY: "bg-slate-100 text-slate-800",
   APPROVED: "bg-green-200 text-green-900",
   REJECTED: "bg-red-200 text-red-900",
   PREVIEW_PENDING: "bg-yellow-100 text-yellow-800",
@@ -14,7 +17,10 @@ const statusColors: Record<string, string> = {
 }
 
 const statusDisplayNames: Record<string, string> = {
-  NEW_CAPTURED: "New Captured",
+  NEW_CAPTURED: "New Lead",
+  HIGH_PRIORITY: "🔥 No Website",
+  MEDIUM_PRIORITY: "📌 Outdated",
+  LOW_PRIORITY: "✅ Good Site",
   APPROVED: "APPROVED",
   PREVIEW_PENDING: "SENT PREVIEW",
   SAMPLE_SENT: "SENT LINK",
