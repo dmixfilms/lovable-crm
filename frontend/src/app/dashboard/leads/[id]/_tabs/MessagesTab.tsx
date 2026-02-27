@@ -139,21 +139,21 @@ export default function MessagesTab({ leadId, lead, onSaved }: MessagesTabProps)
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           {instagramTemplates.map((template) => {
             const rendered = renderTemplate(template.body)
             return (
               <button
                 key={template.id}
                 onClick={() => copyToClipboard(rendered)}
-                className="text-left p-4 bg-gradient-to-br from-pink-50 to-orange-50 border border-pink-200 rounded-lg hover:shadow-md hover:border-pink-400 transition-all cursor-pointer group"
+                className="text-left p-3 bg-gradient-to-br from-pink-50 to-orange-50 border border-pink-200 rounded-lg hover:shadow-md hover:border-pink-400 transition-all cursor-pointer group flex flex-col"
               >
                 <div className="flex items-start justify-between mb-2">
-                  <span className="font-semibold text-pink-900">{template.name}</span>
-                  <span className="text-lg opacity-0 group-hover:opacity-100 transition-opacity">📋 Copy</span>
+                  <span className="font-semibold text-pink-900 text-sm">{template.name}</span>
+                  <span className="text-base opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 ml-1">📋</span>
                 </div>
-                <p className="text-sm text-slate-700 whitespace-pre-wrap line-clamp-4">{rendered}</p>
-                <p className="text-xs text-slate-500 mt-2 opacity-75">Click to copy to clipboard</p>
+                <p className="text-xs text-slate-700 whitespace-pre-wrap flex-grow mb-2 max-h-40 overflow-y-auto">{rendered}</p>
+                <p className="text-xs text-slate-500 opacity-75">Click to copy</p>
               </button>
             )
           })}
