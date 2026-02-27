@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo } from "react"
 import { DragDropContext, DropResult } from "@hello-pangea/dnd"
 import { useLeads, useMoveLead } from "@/hooks/useLeads"
 import KanbanColumn from "@/components/kanban/KanbanColumn"
@@ -12,8 +12,6 @@ const ACTIVE_STATUSES = [
   "NEW_CAPTURED",
   "HIGH_PRIORITY",
   "MEDIUM_PRIORITY",
-  "LOW_PRIORITY",
-  "APPROVED",
   "PREVIEW_PENDING",
   "SAMPLE_SENT",
   "PRICE_SENT",
@@ -25,8 +23,6 @@ const STATUS_DISPLAY_NAMES: Record<string, string> = {
   "NEW_CAPTURED": "New Lead",
   "HIGH_PRIORITY": "No Website",
   "MEDIUM_PRIORITY": "Need Update",
-  "LOW_PRIORITY": "Good Site",
-  "APPROVED": "APPROVED",
   "PREVIEW_PENDING": "SENT PREVIEW",
   "SAMPLE_SENT": "SENT LINK",
   "PRICE_SENT": "SENT PRICE",
@@ -48,11 +44,6 @@ export default function LeadsPage() {
   // Extract leads array from response
   const data = leadsResponse?.items || []
 
-  // Force refetch when page mounts
-  useEffect(() => {
-    refetch()
-  }, [])
-
   // Build local columns from data
   const columns = useMemo(() => {
     const map: Record<string, Lead[]> = {}
@@ -67,13 +58,6 @@ export default function LeadsPage() {
     return map
   }, [data])
 
-  const [localColumns, setLocalColumns] = useState(columns)
-
-  // Update local columns when server data changes
-  useEffect(() => {
-    setLocalColumns(columns)
-  }, [columns])
-
   const onDragEnd = (result: DropResult) => {
     const { draggableId, source, destination } = result
 
@@ -83,17 +67,6 @@ export default function LeadsPage() {
     const leadId = draggableId
     const targetStatus = destination.droppableId
     const sourceStatus = source.droppableId
-
-    // Optimistic update
-    setLocalColumns((prev) => {
-      const updated = { ...prev }
-      const lead = updated[sourceStatus]?.find((l) => l.id === leadId)
-      if (lead) {
-        updated[sourceStatus] = updated[sourceStatus].filter((l) => l.id !== leadId)
-        updated[targetStatus] = [lead, ...(updated[targetStatus] || [])]
-      }
-      return updated
-    })
 
     // Open confirmation dialog
     setConfirmMove({ leadId, targetStatus, sourceStatus })
@@ -106,8 +79,6 @@ export default function LeadsPage() {
       { id: confirmMove.leadId, new_status: confirmMove.targetStatus },
       {
         onError: () => {
-          // Revert optimistic update
-          setLocalColumns(columns)
           setToast({ message: "Failed to move lead", type: "error" })
         },
         onSuccess: () => {
@@ -119,7 +90,6 @@ export default function LeadsPage() {
   }
 
   const handleCancelMove = () => {
-    setLocalColumns(columns)
     setConfirmMove(null)
   }
 
@@ -136,7 +106,7 @@ export default function LeadsPage() {
 
   const columnsData = ACTIVE_STATUSES.map((status) => ({
     status,
-    leads: localColumns[status] || [],
+    leads: columns[status] || [],
   }))
 
   return (
