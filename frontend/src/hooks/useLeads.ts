@@ -44,7 +44,7 @@ export function useMoveLead() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, new_status }: { id: string; new_status: string }) => {
-      const { data } = await api.patch(`/leads/${id}/move`, null, { params: { new_status } })
+      const { data } = await api.patch(`/leads/${id}/move`, {}, { params: { new_status } })
       return data as Lead
     },
     onSuccess: () => {
@@ -83,7 +83,7 @@ export function useSetLeadPriority() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, priority }: { id: string; priority: "HIGH_PRIORITY" | "MEDIUM_PRIORITY" | "LOW_PRIORITY" }) => {
-      const { data } = await api.patch(`/leads/${id}/move`, null, { params: { new_status: priority } })
+      const { data } = await api.patch(`/leads/${id}/move`, {}, { params: { new_status: priority } })
       return data as Lead
     },
     onSuccess: (updated) => {
