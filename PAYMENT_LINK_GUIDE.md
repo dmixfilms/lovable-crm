@@ -99,7 +99,7 @@ const onSendMessage = async () => {
 The Stripe API key is automatically loaded from your `.env` file:
 
 ```env
-STRIPE_SECRET_KEY=...
+STRIPE_SECRET_KEY=your_stripe_secret_key_here
 ```
 
 ✅ Verified: Stripe is configured and working!
