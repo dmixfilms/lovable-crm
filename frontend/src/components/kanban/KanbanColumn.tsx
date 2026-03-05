@@ -7,9 +7,11 @@ interface KanbanColumnProps {
   status: string
   displayName?: string
   leads: Lead[]
+  onToast?: (message: string, type: "success" | "error") => void
+  onSelectLead?: (lead: Lead) => void
 }
 
-export default function KanbanColumn({ status, displayName, leads }: KanbanColumnProps) {
+export default function KanbanColumn({ status, displayName, leads, onToast, onSelectLead }: KanbanColumnProps) {
   return (
     <Droppable droppableId={status}>
       {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
@@ -28,7 +30,7 @@ export default function KanbanColumn({ status, displayName, leads }: KanbanColum
           </div>
           <div className="space-y-2">
             {leads.map((lead, index) => (
-              <KanbanCard key={lead.id} lead={lead} index={index} />
+              <KanbanCard key={lead.id} lead={lead} index={index} onToast={onToast} onSelectLead={onSelectLead} />
             ))}
           </div>
           {provided.placeholder}

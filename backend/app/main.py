@@ -5,7 +5,7 @@ from sqlalchemy import text
 
 from app.database import engine, Base, SessionLocal
 from app.config import settings
-from app.routers import auth, leads, tasks, deals, previews, templates, messages, dashboard, jobs, payments
+from app.routers import auth, leads, tasks, deals, previews, templates, messages, dashboard, jobs, payments, settings as settings_router, backups
 
 # Create tables on startup
 def create_tables():
@@ -19,9 +19,12 @@ def create_tables():
 
 def init_scheduler():
     """Initialize APScheduler"""
-    from app.workers.scheduler import scheduler
+    from app.workers.scheduler import scheduler, register_jobs
 
     try:
+        # Register all jobs first
+        register_jobs()
+
         if not scheduler.running:
             scheduler.start()
             print("✓ APScheduler started")
@@ -91,6 +94,8 @@ app.include_router(payments.router, prefix="/leads", tags=["payments"])
 app.include_router(templates.router, prefix="/templates", tags=["templates"])
 app.include_router(dashboard.router, prefix="/dashboard", tags=["dashboard"])
 app.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
+app.include_router(backups.router, tags=["backups"])
+app.include_router(settings_router.router, prefix="/api", tags=["settings"])
 
 
 @app.get("/health", tags=["health"])

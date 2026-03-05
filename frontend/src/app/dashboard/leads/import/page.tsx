@@ -1,53 +1,97 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useImportRuns, useTriggerImport, type ImportOptions } from "@/hooks/useImport"
 import { useLeads } from "@/hooks/useLeads"
+import { useSettings } from "@/hooks/useSettings"
 import { exportLeadsToCSV } from "@/lib/exportLeads"
 import Toast from "@/components/ui/Toast"
-
-const AVAILABLE_KEYWORDS = [
-  "restaurant",
-  "cafe",
-  "gym",
-  "hair salon",
-  "beauty",
-  "dentist",
-  "plumber",
-  "electrician",
-  "accountant",
-  "lawyer",
-  "photographer",
-  "designer",
-  "bakery",
-  "pizza",
-  "pizza delivery",
-  "florist",
-  "pet store",
-  "veterinary",
-  "pharmacy",
-  "clinic",
-]
-const DEFAULT_SUBURBS = ["Surry Hills", "Newtown", "Bondi", "Parramatta", "Chatswood"]
 
 export default function ImportPage() {
   const { data: runs = [] } = useImportRuns()
   const triggerImport = useTriggerImport()
-  const { data: leadsResponse } = useLeads({ limit: 500 })
+  const { data: leadsResponse } = useLeads({ limit: 100 })
+  const { data: settings, isLoading: settingsLoading } = useSettings()
   const data = leadsResponse?.items || []
 
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null)
   const [showConfig, setShowConfig] = useState(false)
 
   const [config, setConfig] = useState<ImportOptions>({
-    keywords: AVAILABLE_KEYWORDS.slice(0, 3),
-    suburbs: DEFAULT_SUBURBS.slice(0, 1),
+    keywords: [],
+    suburbs: [],
     limit: 30,
     radius_meters: 5000,
   })
 
+  // Load settings from backend
+  useEffect(() => {
+    if (settings) {
+      setConfig({
+        keywords: settings.import_keywords?.split(",").map(k => k.trim()).filter(Boolean) || [],
+        suburbs: settings.import_suburbs?.split(",").map(s => s.trim()).filter(Boolean) || [],
+        limit: settings.daily_import_limit || 30,
+        radius_meters: settings.search_radius_meters || 5000,
+      })
+    }
+  }, [settings])
+
   const [customKeywordInput, setCustomKeywordInput] = useState("")
   const [customSuburbInput, setCustomSuburbInput] = useState("")
+
+  const handleKeywordInputChange = (value: string) => {
+    // Check if comma exists in the input
+    if (value.includes(",")) {
+      // Split by comma and process
+      const parts = value.split(",")
+      const lastPart = parts[parts.length - 1].trim() // Keep what's after the last comma
+
+      // Add all parts except the last one (which is being typed)
+      const itemsToAdd = parts.slice(0, -1).map(item => item.trim()).filter(Boolean)
+
+      if (itemsToAdd.length > 0) {
+        const newKeywords = [...(config.keywords || [])]
+        itemsToAdd.forEach(item => {
+          if (item && !newKeywords.includes(item.toLowerCase())) {
+            newKeywords.push(item.toLowerCase())
+          }
+        })
+        setConfig({ ...config, keywords: newKeywords })
+      }
+
+      // Keep the last part (after comma) in the input for further typing
+      setCustomKeywordInput(lastPart)
+    } else {
+      setCustomKeywordInput(value)
+    }
+  }
+
+  const handleSuburbInputChange = (value: string) => {
+    // Check if comma exists in the input
+    if (value.includes(",")) {
+      // Split by comma and process
+      const parts = value.split(",")
+      const lastPart = parts[parts.length - 1].trim() // Keep what's after the last comma
+
+      // Add all parts except the last one (which is being typed)
+      const itemsToAdd = parts.slice(0, -1).map(item => item.trim()).filter(Boolean)
+
+      if (itemsToAdd.length > 0) {
+        const newSuburbs = [...(config.suburbs || [])]
+        itemsToAdd.forEach(item => {
+          if (item && !newSuburbs.includes(item)) {
+            newSuburbs.push(item)
+          }
+        })
+        setConfig({ ...config, suburbs: newSuburbs })
+      }
+
+      // Keep the last part (after comma) in the input for further typing
+      setCustomSuburbInput(lastPart)
+    } else {
+      setCustomSuburbInput(value)
+    }
+  }
 
   const handleTriggerImport = () => {
     triggerImport.mutate(config, {
@@ -132,6 +176,13 @@ export default function ImportPage() {
 
         {showConfig && (
           <div className="border-t border-slate-200 p-6 space-y-6">
+            {settingsLoading && (
+              <div className="flex items-center gap-2 text-blue-600 bg-blue-50 p-3 rounded-lg">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                <span className="text-sm">Loading settings...</span>
+              </div>
+            )}
+
             {/* Keywords */}
             <div>
               <label className="block text-sm font-semibold text-slate-900 mb-3">Keywords</label>
@@ -140,9 +191,9 @@ export default function ImportPage() {
                 <input
                   type="text"
                   value={customKeywordInput}
-                  onChange={(e) => setCustomKeywordInput(e.target.value)}
+                  onChange={(e) => handleKeywordInputChange(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleAddCustomKeyword()}
-                  placeholder="ex: restaurant, cafe, gym..."
+                  placeholder="ex: restaurant, cafe, gym... (press comma or Enter to add)"
                   className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                 />
                 <button
@@ -182,9 +233,9 @@ export default function ImportPage() {
                 <input
                   type="text"
                   value={customSuburbInput}
-                  onChange={(e) => setCustomSuburbInput(e.target.value)}
+                  onChange={(e) => handleSuburbInputChange(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleAddCustomSuburb()}
-                  placeholder="ex: Newtown, Bondi, Surry Hills..."
+                  placeholder="ex: Newtown, Bondi, Surry Hills... (press comma or Enter to add)"
                   className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 />
                 <button

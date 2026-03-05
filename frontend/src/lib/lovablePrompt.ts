@@ -130,13 +130,41 @@ Create an INNOVATIVE, PREMIUM website using HTML5 + CSS3 that makes their previo
 
 export function getLovablePrompt(): string {
   if (typeof window === "undefined") return DEFAULT_LOVABLE_PROMPT
-  const saved = localStorage.getItem("lovable_prompt")
-  return saved || DEFAULT_LOVABLE_PROMPT
+
+  // ALWAYS remove old key first to prevent conflicts
+  localStorage.removeItem("lovable_prompt")
+
+  // Force fresh read from localStorage every time (no caching)
+  const saved = localStorage.getItem("lovable_prompt_v2")
+
+  if (saved && saved.length > 10) {
+    // Return saved prompt if it exists and is not empty
+    return saved
+  }
+
+  // Default only if nothing is saved
+  return DEFAULT_LOVABLE_PROMPT
 }
 
 export function saveLovablePrompt(prompt: string): void {
   if (typeof window !== "undefined") {
-    localStorage.setItem("lovable_prompt", prompt)
+    // IMMEDIATELY remove old key to prevent conflicts
+    localStorage.removeItem("lovable_prompt")
+    localStorage.removeItem("lovable_prompt") // Double check
+
+    // Clear any old cache
+    sessionStorage.removeItem("lovable_prompt")
+    sessionStorage.removeItem("lovable_prompt_v2")
+
+    // Save with new version key
+    localStorage.setItem("lovable_prompt_v2", prompt)
+
+    // Log for debugging
+    console.log("✅ Prompt saved to localStorage:", prompt.substring(0, 50) + "...")
+    console.log("🗑️  Old prompt key removed")
+
+    // Force browser to recognize the change
+    window.dispatchEvent(new Event("lovable_prompt_updated"))
   }
 }
 
@@ -150,6 +178,10 @@ export function renderPrompt(prompt: string, data: {
   suburb?: string
   phone?: string
   website_url?: string
+  email?: string
+  industry?: string
+  address?: string
+  instagram?: string
 }): string {
   let rendered = prompt
   rendered = rendered.replace(/\{\{business_name\}\}/g, data.business_name || "")
@@ -157,5 +189,9 @@ export function renderPrompt(prompt: string, data: {
   rendered = rendered.replace(/\{\{suburb\}\}/g, data.suburb || "")
   rendered = rendered.replace(/\{\{phone\}\}/g, data.phone || "")
   rendered = rendered.replace(/\{\{website_url\}\}/g, data.website_url || "")
+  rendered = rendered.replace(/\{\{email\}\}/g, data.email || "")
+  rendered = rendered.replace(/\{\{industry\}\}/g, data.industry || "")
+  rendered = rendered.replace(/\{\{address\}\}/g, data.address || "")
+  rendered = rendered.replace(/\{\{instagram\}\}/g, data.instagram || "")
   return rendered
 }

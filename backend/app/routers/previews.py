@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from datetime import datetime
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models.user import User
@@ -57,7 +58,13 @@ def update_preview(
     if not preview:
         raise HTTPException(status_code=404, detail="Preview not found")
 
-    for field, value in data.model_dump(exclude_unset=True).items():
+    update_data = data.model_dump(exclude_unset=True)
+
+    # Auto-stamp archived_at when archiving
+    if update_data.get("is_archived") and not preview.is_archived:
+        update_data["archived_at"] = datetime.utcnow()
+
+    for field, value in update_data.items():
         setattr(preview, field, value)
 
     db.commit()

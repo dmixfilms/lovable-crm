@@ -2,10 +2,17 @@
 
 import { useState, useEffect } from "react"
 import { getLovablePrompt, saveLovablePrompt, getDefaultLovablePrompt } from "@/lib/lovablePrompt"
+import { useSettings, useUpdateSettings, type AppSettingsUpdate } from "@/hooks/useSettings"
+import Toast from "@/components/ui/Toast"
 
 export default function SettingsPage() {
+  const { data: settings, isLoading } = useSettings()
+  const updateSettings = useUpdateSettings()
+
   const [saved, setSaved] = useState(false)
   const [lovablePrompt, setLovablePrompt] = useState("")
+  const [formData, setFormData] = useState<AppSettingsUpdate>({})
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null)
 
   useEffect(() => {
     // Load prompt from localStorage on mount
@@ -13,16 +20,67 @@ export default function SettingsPage() {
     setLovablePrompt(prompt)
   }, [])
 
+  useEffect(() => {
+    // Load settings into form
+    if (settings) {
+      setFormData({
+        daily_import_enabled: settings.daily_import_enabled,
+        daily_import_first_hour: settings.daily_import_first_hour,
+        daily_import_first_minute: settings.daily_import_first_minute,
+        daily_import_second_enabled: settings.daily_import_second_enabled,
+        daily_import_second_hour: settings.daily_import_second_hour,
+        daily_import_second_minute: settings.daily_import_second_minute,
+        daily_import_limit: settings.daily_import_limit,
+        search_radius_meters: settings.search_radius_meters,
+        import_keywords: settings.import_keywords,
+        import_suburbs: settings.import_suburbs,
+        lovable_preview_cost_aud: settings.lovable_preview_cost_aud,
+        target_profit_margin: settings.target_profit_margin,
+        preview_expiry_days: settings.preview_expiry_days,
+        timezone: settings.timezone,
+      })
+    }
+  }, [settings])
+
   const handleSave = () => {
-    // Save prompt to localStorage
+    // Save prompt to localStorage (fresh save, clears old cache)
     saveLovablePrompt(lovablePrompt)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 3000)
+    console.log("💾 Prompt saved:", lovablePrompt.substring(0, 100) + "...")
+
+    // Save settings to backend
+    updateSettings.mutate(formData, {
+      onSuccess: () => {
+        setSaved(true)
+        setToast({
+          message: "✓ Settings saved! Prompt atualizado para o Lovable",
+          type: "success",
+        })
+        setTimeout(() => setSaved(false), 5000)
+      },
+      onError: () => {
+        setToast({ message: "✗ Failed to save settings", type: "error" })
+      },
+    })
   }
 
   const handleResetPrompt = () => {
     const defaultPrompt = getDefaultLovablePrompt()
     setLovablePrompt(defaultPrompt)
+  }
+
+  const handleInputChange = (field: string, value: any) => {
+    setFormData({ ...formData, [field]: value })
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mb-2"></div>
+          <p className="text-slate-600">Loading settings...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -67,20 +125,98 @@ export default function SettingsPage() {
         </div>
 
         <div className="border-t border-slate-200 pt-6">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">API Configuration</h2>
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">📥 Import Configuration</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Google Places API Key
+              <label className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={formData.daily_import_enabled ?? true}
+                  onChange={(e) => handleInputChange("daily_import_enabled", e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 cursor-pointer"
+                />
+                <span className="text-sm font-medium text-slate-700">Enable Daily Import</span>
               </label>
-              <input
-                type="password"
-                placeholder="Enter your API key"
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-              <p className="text-xs text-slate-500 mt-1">
-                Used for importing leads from Google Places
-              </p>
+            </div>
+
+            <div className="bg-slate-50 p-4 rounded-lg space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  First Import Time (Sydney Time)
+                </label>
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <input
+                      type="number"
+                      min="0"
+                      max="23"
+                      value={formData.daily_import_first_hour ?? 7}
+                      onChange={(e) => handleInputChange("daily_import_first_hour", parseInt(e.target.value))}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      placeholder="Hour"
+                    />
+                    <p className="text-xs text-slate-500 mt-1 text-center">Hour</p>
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      type="number"
+                      min="0"
+                      max="59"
+                      value={formData.daily_import_first_minute ?? 0}
+                      onChange={(e) => handleInputChange("daily_import_first_minute", parseInt(e.target.value))}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      placeholder="Minute"
+                    />
+                    <p className="text-xs text-slate-500 mt-1 text-center">Minute</p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={formData.daily_import_second_enabled ?? false}
+                    onChange={(e) => handleInputChange("daily_import_second_enabled", e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 cursor-pointer"
+                  />
+                  <span className="text-sm font-medium text-slate-700">Enable Second Daily Import</span>
+                </label>
+              </div>
+
+              {formData.daily_import_second_enabled && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Second Import Time (Sydney Time)
+                  </label>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <input
+                        type="number"
+                        min="0"
+                        max="23"
+                        value={formData.daily_import_second_hour ?? 19}
+                        onChange={(e) => handleInputChange("daily_import_second_hour", parseInt(e.target.value))}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        placeholder="Hour"
+                      />
+                      <p className="text-xs text-slate-500 mt-1 text-center">Hour</p>
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        type="number"
+                        min="0"
+                        max="59"
+                        value={formData.daily_import_second_minute ?? 0}
+                        onChange={(e) => handleInputChange("daily_import_second_minute", parseInt(e.target.value))}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        placeholder="Minute"
+                      />
+                      <p className="text-xs text-slate-500 mt-1 text-center">Minute</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div>
@@ -89,18 +225,61 @@ export default function SettingsPage() {
               </label>
               <input
                 type="number"
-                defaultValue="30"
+                value={formData.daily_import_limit ?? 30}
+                onChange={(e) => handleInputChange("daily_import_limit", parseInt(e.target.value))}
                 className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
               <p className="text-xs text-slate-500 mt-1">
                 Maximum number of leads to import per day
               </p>
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Search Radius (meters)
+              </label>
+              <input
+                type="number"
+                value={formData.search_radius_meters ?? 5000}
+                onChange={(e) => handleInputChange("search_radius_meters", parseInt(e.target.value))}
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Import Keywords (comma-separated)
+              </label>
+              <input
+                type="text"
+                value={formData.import_keywords ?? ""}
+                onChange={(e) => handleInputChange("import_keywords", e.target.value)}
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-xs"
+              />
+              <p className="text-xs text-slate-500 mt-1">
+                Examples: restaurant, cafe, gym, hair salon, beauty, dentist
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Import Suburbs (comma-separated)
+              </label>
+              <input
+                type="text"
+                value={formData.import_suburbs ?? ""}
+                onChange={(e) => handleInputChange("import_suburbs", e.target.value)}
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-xs"
+              />
+              <p className="text-xs text-slate-500 mt-1">
+                Examples: Surry Hills, Newtown, Bondi, Parramatta, Chatswood
+              </p>
+            </div>
           </div>
         </div>
 
         <div className="border-t border-slate-200 pt-6">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Financial Settings</h2>
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">💰 Financial Settings</h2>
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -109,7 +288,8 @@ export default function SettingsPage() {
               <input
                 type="number"
                 step="0.01"
-                defaultValue="50"
+                value={formData.lovable_preview_cost_aud ?? 50}
+                onChange={(e) => handleInputChange("lovable_preview_cost_aud", parseFloat(e.target.value))}
                 className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
@@ -121,7 +301,8 @@ export default function SettingsPage() {
               <input
                 type="number"
                 step="0.1"
-                defaultValue="60"
+                value={formData.target_profit_margin ?? 60}
+                onChange={(e) => handleInputChange("target_profit_margin", parseFloat(e.target.value))}
                 className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
@@ -129,7 +310,7 @@ export default function SettingsPage() {
         </div>
 
         <div className="border-t border-slate-200 pt-6">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Preview Settings</h2>
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">⏰ Preview Settings</h2>
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -137,7 +318,8 @@ export default function SettingsPage() {
               </label>
               <input
                 type="number"
-                defaultValue="7"
+                value={formData.preview_expiry_days ?? 7}
+                onChange={(e) => handleInputChange("preview_expiry_days", parseInt(e.target.value))}
                 className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
               <p className="text-xs text-slate-500 mt-1">
@@ -169,7 +351,7 @@ export default function SettingsPage() {
                 placeholder="Enter your Lovable prompt..."
               />
               <p className="text-xs text-slate-500 mt-2">
-                💡 <span className="font-semibold">Pro tip:</span> Use {`{{business_name}}, {{owner_name}}, {{suburb}}, {{phone}}, {{website_url}}`} as variables. They'll be auto-filled when you create a preview.
+                💡 <span className="font-semibold">Pro tip:</span> Use {`{{business_name}}, {{owner_name}}, {{suburb}}, {{phone}}, {{website_url}}, {{email}}, {{industry}}, {{address}}, {{instagram}}`} as variables. They'll be auto-filled when you create a preview.
               </p>
               <p className="text-xs text-amber-700 mt-2 bg-amber-50 p-2 rounded">
                 This prompt is sent to Lovable when you click "Criar com Lovable" button. Improve it over time to get better results!
@@ -181,9 +363,10 @@ export default function SettingsPage() {
         <div className="border-t border-slate-200 pt-6 flex gap-4">
           <button
             onClick={handleSave}
-            className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+            disabled={updateSettings.isPending}
+            className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-400 transition-colors font-medium"
           >
-            Save Settings
+            {updateSettings.isPending ? "Saving..." : "Save Settings"}
           </button>
           <button className="px-6 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors font-medium">
             Cancel
@@ -199,6 +382,8 @@ export default function SettingsPage() {
           <p>Database: SQLite</p>
         </div>
       </div>
+
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   )
 }

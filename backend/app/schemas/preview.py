@@ -27,8 +27,22 @@ class PreviewResponse(BaseModel):
     old_website_url: Optional[str]
     is_archived: bool
     archive_reason: Optional[str]
+    archived_at: Optional[datetime]
     created_at: datetime
     expires_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class ActivePreviewSummary(BaseModel):
+    """Summary of active (non-archived) preview for lead listing"""
+    id: str
+    preview_url: str
+    expires_at: datetime
+    is_archived: bool
+    archive_reason: Optional[str]
+    archived_at: Optional[datetime]
 
     class Config:
         from_attributes = True

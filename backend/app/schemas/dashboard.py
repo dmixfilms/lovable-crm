@@ -43,5 +43,7 @@ class DashboardSummary(BaseModel):
     leads_today: int
     leads_this_week: int
     leads_this_month: int
+    preview_ready_today: int
+    built_today: int
     pipeline: List[PipelineStageCount]
     financial: FinancialSummary

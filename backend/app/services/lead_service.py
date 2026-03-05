@@ -3,6 +3,7 @@ from sqlalchemy import func
 from datetime import datetime
 from typing import Optional, List
 from app.models.lead import Lead, PipelineStatus
+from app.models.lovable_preview import LovablePreview
 from app.models.pipeline_event import PipelineEvent
 from app.schemas.lead import LeadCreate, LeadUpdate
 
@@ -19,7 +20,7 @@ class LeadService:
         skip: int = 0,
         limit: int = 100,
     ) -> dict:
-        """List leads with filters"""
+        """List leads with filters and active previews"""
         query = self.db.query(Lead)
 
         if status:
@@ -42,11 +43,48 @@ class LeadService:
         total = query.count()
         leads = query.order_by(Lead.created_at.desc()).offset(skip).limit(limit).all()
 
+        # Batch-load active previews (non-archived, most recent)
+        lead_ids = [lead.id for lead in leads]
+        active_previews = (
+            self.db.query(LovablePreview)
+            .filter(
+                LovablePreview.lead_id.in_(lead_ids),
+                LovablePreview.is_archived == False,
+            )
+            .order_by(LovablePreview.created_at.desc())
+            .all()
+        )
+
+        # Map previews to leads (one preview per lead, most recent)
+        preview_map = {}
+        for preview in active_previews:
+            if preview.lead_id not in preview_map:
+                preview_map[preview.lead_id] = preview
+
+        # Attach active preview to each lead
+        for lead in leads:
+            lead.active_preview = preview_map.get(lead.id, None)
+
         return {"total": total, "items": leads}
 
     def get_lead(self, lead_id: str) -> Optional[Lead]:
-        """Get a single lead by ID"""
-        return self.db.query(Lead).filter(Lead.id == lead_id).first()
+        """Get a single lead by ID with active preview"""
+        lead = self.db.query(Lead).filter(Lead.id == lead_id).first()
+        if not lead:
+            return None
+
+        # Load most recent active (non-archived) preview
+        active_preview = (
+            self.db.query(LovablePreview)
+            .filter(
+                LovablePreview.lead_id == lead_id,
+                LovablePreview.is_archived == False,
+            )
+            .order_by(LovablePreview.created_at.desc())
+            .first()
+        )
+        lead.active_preview = active_preview
+        return lead
 
     def create_lead(self, data: LeadCreate) -> Lead:
         """Create a new lead"""
@@ -113,6 +151,7 @@ class LeadService:
 
         old_status = lead.status_pipeline.value
         lead.status_pipeline = new_pipeline_status
+        lead.status_changed_at = datetime.now()
         self.db.commit()
         self.db.refresh(lead)
 

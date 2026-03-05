@@ -32,8 +32,8 @@ def run_daily_import_job(keywords=None, suburbs=None, limit=None, radius_meters=
     leads_skipped = 0
 
     try:
-        for suburb in suburbs[:1]:  # Import from first suburb for now
-            for keyword in keywords[:3]:  # Limit to first 3 keywords per suburb
+        for suburb in suburbs:  # Import from all suburbs
+            for keyword in keywords:  # Import all keywords
                 try:
                     places = asyncio.run(
                         service.search_businesses(keyword, location=f"{suburb}, Sydney, NSW", limit=10)

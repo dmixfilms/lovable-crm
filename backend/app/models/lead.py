@@ -49,6 +49,7 @@ class Lead(Base):
     notes = Column(Text)
     created_at = Column(DateTime, server_default=func.now(), nullable=False, index=True)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
+    status_changed_at = Column(DateTime, server_default=func.now(), nullable=False, index=True)
 
     # Relationships
     tasks = None  # Will be added via imports

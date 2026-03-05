@@ -1,8 +1,10 @@
 "use client"
 import { useState } from "react"
-import { usePreviews, useCreatePreview, useArchivePreview } from "@/hooks/usePreviews"
+import { usePreviews, useCreatePreview, useArchivePreview, useDeletePreview } from "@/hooks/usePreviews"
+import { useMoveLead } from "@/hooks/useLeads"
 import ConfirmDialog from "@/components/ui/ConfirmDialog"
 import { differenceInDays } from "date-fns"
+import { getPreviewDaysLeft } from "@/components/kanban/PreviewExpiryBadge"
 
 interface PreviewTabProps {
   leadId: string
@@ -13,6 +15,8 @@ export default function PreviewTab({ leadId, onSaved }: PreviewTabProps) {
   const { data: previews = [] } = usePreviews(leadId)
   const createPreview = useCreatePreview(leadId)
   const archivePreview = useArchivePreview(leadId)
+  const deletePreview = useDeletePreview(leadId)
+  const moveLead = useMoveLead()
 
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({
@@ -22,6 +26,8 @@ export default function PreviewTab({ leadId, onSaved }: PreviewTabProps) {
     old_website_url: ""
   })
   const [confirmArchive, setConfirmArchive] = useState<string | null>(null)
+  const [confirmDeactivated, setConfirmDeactivated] = useState<string | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [imagePreview, setImagePreview] = useState<string>("")
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,6 +56,16 @@ export default function PreviewTab({ leadId, onSaved }: PreviewTabProps) {
         setImagePreview("")
         setShowForm(false)
         onSaved("✅ Preview saved successfully!")
+
+        // Move lead to PREVIEW_CREATED status automatically
+        moveLead.mutate({ id: leadId, new_status: "PREVIEW_CREATED" }, {
+          onSuccess: () => {
+            console.log("📍 Lead moved to PREVIEW_CREATED")
+          },
+          onError: (error: any) => {
+            console.error("⚠️ Could not auto-move lead:", error)
+          }
+        })
       },
       onError: (error: any) => {
         console.error("❌ Error saving preview:", error)
@@ -64,6 +80,33 @@ export default function PreviewTab({ leadId, onSaved }: PreviewTabProps) {
       onSuccess: () => {
         setConfirmArchive(null)
         onSaved("Preview archived")
+      },
+    })
+  }
+
+  const handleConfirmDeactivatedClick = (previewId: string) => {
+    setConfirmDeactivated(previewId)
+  }
+
+  const handleConfirmDeactivated = () => {
+    if (!confirmDeactivated) return
+    archivePreview.mutate({ previewId: confirmDeactivated, reason: "manually_deactivated" }, {
+      onSuccess: () => {
+        setConfirmDeactivated(null)
+        onSaved("✅ Desativação confirmada. Tarefa de exclusão será criada em 30 dias.")
+      },
+    })
+  }
+
+  const handleConfirmDelete = () => {
+    if (!confirmDelete) return
+    deletePreview.mutate(confirmDelete, {
+      onSuccess: () => {
+        setConfirmDelete(null)
+        onSaved("🗑️ Preview deleted successfully")
+      },
+      onError: (error: any) => {
+        onSaved(`❌ Error deleting preview: ${error.message || "Failed to delete"}`)
       },
     })
   }
@@ -220,14 +263,30 @@ export default function PreviewTab({ leadId, onSaved }: PreviewTabProps) {
                         )}
                       </div>
                     </div>
-                    {!preview.is_archived && (
+                    <div className="ml-4 flex flex-col gap-2">
+                      {!preview.is_archived && daysLeft <= 0 && (
+                        <button
+                          onClick={() => handleConfirmDeactivatedClick(preview.id)}
+                          className="text-sm font-medium px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors whitespace-nowrap"
+                        >
+                          Confirmar Desativado
+                        </button>
+                      )}
+                      {!preview.is_archived && daysLeft > 0 && (
+                        <button
+                          onClick={() => setConfirmArchive(preview.id)}
+                          className="text-red-600 hover:text-red-700 text-sm font-medium"
+                        >
+                          Archive
+                        </button>
+                      )}
                       <button
-                        onClick={() => setConfirmArchive(preview.id)}
-                        className="text-red-600 hover:text-red-700 text-sm font-medium ml-4"
+                        onClick={() => setConfirmDelete(preview.id)}
+                        className="text-red-600 hover:text-red-700 text-sm font-medium"
                       >
-                        Archive
+                        🗑️ Remove
                       </button>
-                    )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -243,6 +302,26 @@ export default function PreviewTab({ leadId, onSaved }: PreviewTabProps) {
         confirmLabel="Archive"
         onConfirm={handleArchiveConfirm}
         onCancel={() => setConfirmArchive(null)}
+        isDangerous
+      />
+
+      <ConfirmDialog
+        open={!!confirmDeactivated}
+        title="Confirmar Desativação"
+        message="Confirme que você desativou o site no Lovable. Em 30 dias será criada uma tarefa para exclusão definitiva."
+        confirmLabel="Confirmar"
+        onConfirm={handleConfirmDeactivated}
+        onCancel={() => setConfirmDeactivated(null)}
+        isDangerous
+      />
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        title="Remove Preview"
+        message="Are you sure you want to permanently delete this preview? This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmDelete(null)}
         isDangerous
       />
     </div>

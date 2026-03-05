@@ -1,6 +1,7 @@
 from pydantic import BaseModel, HttpUrl
 from typing import Optional, List
 from datetime import datetime
+from app.schemas.preview import ActivePreviewSummary
 
 
 class LeadCreate(BaseModel):
@@ -47,6 +48,7 @@ class LeadResponse(BaseModel):
     notes: Optional[str]
     created_at: datetime
     updated_at: datetime
+    active_preview: Optional[ActivePreviewSummary] = None
 
     class Config:
         from_attributes = True

@@ -7,7 +7,7 @@ export function useLeads(params?: { status?: string; search?: string; suburb?: s
   return useQuery({
     queryKey: ["leads", params],
     queryFn: async () => {
-      const { data } = await api.get("/leads/", { params: { limit: 200, ...params } })
+      const { data } = await api.get("/leads/", { params: { limit: 1000, ...params } })
       return data as { total: number; items: Lead[] }
     },
     enabled: true,

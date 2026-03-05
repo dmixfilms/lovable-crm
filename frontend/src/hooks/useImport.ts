@@ -16,8 +16,14 @@ export function useImportRuns() {
   return useQuery({
     queryKey: ["import-runs"],
     queryFn: async () => {
-      const { data } = await api.get("/jobs/runs", { params: { limit: 10 } })
-      return data as ImportRun[]
+      try {
+        const { data } = await api.get("/jobs/runs", { params: { limit: 10 } })
+        return data as ImportRun[]
+      } catch (error) {
+        // Return empty array on error instead of throwing
+        console.error("Failed to fetch import runs:", error)
+        return [] as ImportRun[]
+      }
     },
   })
 }

@@ -20,7 +20,7 @@ export default function DashboardPage() {
   const [error, setError] = useState("")
 
   // Load leads to ensure data is available
-  const { data: leadsData } = useLeads({ limit: 500 })
+  const { data: leadsData } = useLeads({ limit: 100 })
 
   useEffect(() => {
     const fetchSummary = async () => {

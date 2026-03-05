@@ -29,6 +29,16 @@ def get_dashboard_summary(
     leads_week = db.query(Lead).filter(Lead.created_at >= week_cutoff).count()
     leads_month = db.query(Lead).filter(Lead.created_at >= month_cutoff).count()
 
+    # Preview Ready: leads with instagram_url created today
+    preview_ready_today = db.query(Lead).filter(
+        Lead.created_at >= today_cutoff,
+        Lead.instagram_url.isnot(None),
+        Lead.instagram_url != ""
+    ).count()
+
+    # Built Today: deals created today
+    built_today = db.query(Deal).filter(Deal.created_at >= today_cutoff).count()
+
     # Pipeline counts
     service = LeadService(db)
     status_counts = service.count_by_status()
@@ -65,6 +75,8 @@ def get_dashboard_summary(
         leads_today=leads_today,
         leads_this_week=leads_week,
         leads_this_month=leads_month,
+        preview_ready_today=preview_ready_today,
+        built_today=built_today,
         pipeline=pipeline,
         financial=financial,
     )

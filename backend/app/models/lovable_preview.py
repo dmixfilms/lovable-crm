@@ -13,5 +13,6 @@ class LovablePreview(Base):
     old_website_url = Column(String(500), nullable=True)  # URL of old website for comparison
     is_archived = Column(Boolean, default=False, index=True)
     archive_reason = Column(String(255), nullable=True)
+    archived_at = Column(DateTime, nullable=True)  # When the preview was archived
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
     expires_at = Column(DateTime, nullable=False)  # 7 days from creation by default

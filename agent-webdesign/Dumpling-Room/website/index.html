@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Dumpling Room - Authentic Pan-Asian Dumplings & Noodles in Newtown, Sydney. Handcrafted dumplings, fresh noodles, and vibrant Asian flavours since day one." />
+  <meta name="keywords" content="dumpling room, newtown, sydney, dumplings, noodles, asian food, pan asian, king street" />
+  <meta property="og:title" content="Dumpling Room Newtown - Pan-Asian Dining" />
+  <meta property="og:description" content="Handcrafted dumplings & noodles in the heart of Newtown, Sydney." />
+  <meta property="og:type" content="restaurant" />
+  <title>Dumpling Room | Pan-Asian Dining · Newtown, Sydney</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       HEADER / NAVIGATION
+  ============================================================ -->
+  <header class="header" id="header">
+    <div class="header__inner">
+      <a href="#hero" class="logo" aria-label="Dumpling Room Home">
+        <span class="logo__text">
+          <span class="logo__name">Dumpling Room</span>
+          <span class="logo__tagline">Pan-Asian Dining</span>
+        </span>
+      </a>
+
+      <nav class="nav" id="nav" aria-label="Main navigation">
+        <ul class="nav__list">
+          <li><a href="#about"     class="nav__link">Our Story</a></li>
+          <li><a href="#specialties" class="nav__link">Specialties</a></li>
+          <li><a href="#menu"      class="nav__link">Menu</a></li>
+          <li><a href="#gallery"   class="nav__link">Gallery</a></li>
+          <li><a href="#hours"     class="nav__link">Visit</a></li>
+          <li><a href="tel:+61295161640" class="nav__link nav__link--cta">Call Us</a></li>
+        </ul>
+      </nav>
+
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <nav aria-label="Mobile navigation">
+      <ul class="mobile-menu__list">
+        <li><a href="#about"       class="mobile-menu__link" data-close>Our Story</a></li>
+        <li><a href="#specialties" class="mobile-menu__link" data-close>Specialties</a></li>
+        <li><a href="#menu"        class="mobile-menu__link" data-close>Menu</a></li>
+        <li><a href="#gallery"     class="mobile-menu__link" data-close>Gallery</a></li>
+        <li><a href="#hours"       class="mobile-menu__link" data-close>Visit</a></li>
+        <li><a href="tel:+61295161640" class="mobile-menu__link mobile-menu__link--cta" data-close>Call Us</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <main>
+    <!-- ============================================================
+         HERO SECTION
+    ============================================================ -->
+    <section class="hero" id="hero" aria-label="Hero">
+      <!-- Premium header image with dim sums -->
+      <img class="hero__bg-image" src="../images/HEADER.jpeg" alt="Dumpling Room - Handcrafted Dumplings" loading="eager">
+
+      <!-- Animated background layers (fallback) -->
+      <div class="hero__bg-layer hero__bg-layer--1"></div>
+      <div class="hero__bg-layer hero__bg-layer--2"></div>
+      <div class="hero__particles" id="particles"></div>
+
+      <!-- Floating food SVG deco -->
+      <div class="hero__deco hero__deco--br" aria-hidden="true">
+        <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="40" cy="40" r="35" stroke="rgba(196,30,58,0.2)" stroke-width="1"/>
+          <circle cx="40" cy="40" r="25" stroke="rgba(196,30,58,0.15)" stroke-width="1"/>
+          <circle cx="40" cy="40" r="5" fill="rgba(196,30,58,0.3)"/>
+        </svg>
+      </div>
+
+      <div class="hero__content">
+        <div class="hero__badge animate-fade-up" data-delay="0">
+          <span>&#127963; Newtown, Sydney</span>
+        </div>
+        <h1 class="hero__title animate-fade-up" data-delay="100">
+          <span class="hero__title-line">Handcrafted</span>
+          <span class="hero__title-line hero__title-line--accent">Dumplings</span>
+          <span class="hero__title-line">&amp; Noodles</span>
+        </h1>
+        <p class="hero__subtitle animate-fade-up" data-delay="250">
+          Authentic Pan-Asian flavours folded with love — from our kitchen to your table on King Street, Newtown.
+        </p>
+        <div class="hero__actions animate-fade-up" data-delay="400">
+          <a href="#menu" class="btn btn--primary">Explore Menu</a>
+        </div>
+        <div class="hero__meta animate-fade-up" data-delay="550">
+          <span class="hero__meta-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            124 King St, Newtown
+          </span>
+          <span class="hero__meta-sep">·</span>
+          <span class="hero__meta-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+            11:30 AM – 11:00 PM Daily
+          </span>
+        </div>
+      </div>
+
+
+      <a href="#about" class="hero__scroll" aria-label="Scroll down">
+        <span class="hero__scroll-line"></span>
+        <span class="hero__scroll-label">Scroll</span>
+      </a>
+    </section>
+
+    <!-- ============================================================
+         MARQUEE STRIP
+    ============================================================ -->
+    <div class="marquee-strip" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Pan-Asian Cuisine</span><span class="marquee-dot">&#x2022;</span>
+        <span>Handmade Dumplings</span><span class="marquee-dot">&#x2022;</span>
+        <span>Fresh Noodles</span><span class="marquee-dot">&#x2022;</span>
+        <span>Pork & Chive</span><span class="marquee-dot">&#x2022;</span>
+        <span>Prawn & Vegetable</span><span class="marquee-dot">&#x2022;</span>
+        <span>Lunch Specials</span><span class="marquee-dot">&#x2022;</span>
+        <span>Newtown · Sydney</span><span class="marquee-dot">&#x2022;</span>
+        <span>Open Daily</span><span class="marquee-dot">&#x2022;</span>
+        <!-- duplicate for seamless loop -->
+        <span>Pan-Asian Cuisine</span><span class="marquee-dot">&#x2022;</span>
+        <span>Handmade Dumplings</span><span class="marquee-dot">&#x2022;</span>
+        <span>Fresh Noodles</span><span class="marquee-dot">&#x2022;</span>
+        <span>Pork & Chive</span><span class="marquee-dot">&#x2022;</span>
+        <span>Prawn & Vegetable</span><span class="marquee-dot">&#x2022;</span>
+        <span>Lunch Specials</span><span class="marquee-dot">&#x2022;</span>
+        <span>Newtown · Sydney</span><span class="marquee-dot">&#x2022;</span>
+        <span>Open Daily</span><span class="marquee-dot">&#x2022;</span>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         ABOUT SECTION
+    ============================================================ -->
+    <section class="about section" id="about">
+      <div class="container">
+        <div class="about__grid">
+          <div class="about__visual reveal-left">
+            <div class="about__img-stack">
+              <div class="about__img-card about__img-card--back">
+                <!-- Decorative dumpling pattern -->
+                <div class="dumpling-pattern"></div>
+              </div>
+              <div class="about__img-card about__img-card--front">
+                <!-- Real food image - Steamed Dumplings -->
+                <img class="about__image" src="../images/ubereats_011.jpg" alt="Dumpling Room Steamed Dumplings" loading="lazy">
+              </div>
+              <div class="about__badge-float">
+                <span class="about__badge-num">10+</span>
+                <span class="about__badge-txt">Years of<br>Flavour</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="about__content reveal-right">
+            <span class="section-tag">Our Story</span>
+            <h2 class="section-title">Where Every Fold<br>Tells a Story</h2>
+            <p class="about__lead">
+              Nestled on vibrant King Street in the heart of Newtown, Dumpling Room brings the soul of Pan-Asian cooking to Sydney's most colourful neighbourhood.
+            </p>
+            <p class="about__body">
+              Our dumplings are crafted by hand each morning — thin, silky skins wrapped around perfectly seasoned fillings. From the umami-rich pork &amp; chive to the delicate prawn &amp; vegetable, every bite carries the warmth of a grandmother's kitchen and the precision of a seasoned chef.
+            </p>
+            <p class="about__body">
+              Sit by the window, watch Newtown buzz outside, and let the flavours of Asia transport you — one dumpling at a time.
+            </p>
+            <div class="about__stats">
+              <div class="about__stat">
+                <span class="about__stat-num">50+</span>
+                <span class="about__stat-label">Menu Items</span>
+              </div>
+              <div class="about__stat">
+                <span class="about__stat-num">Daily</span>
+                <span class="about__stat-label">Fresh Made</span>
+              </div>
+              <div class="about__stat">
+                <span class="about__stat-num">7</span>
+                <span class="about__stat-label">Days Open</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SPECIALTIES SECTION
+    ============================================================ -->
+    <section class="specialties section section--dark" id="specialties">
+      <div class="container">
+        <div class="section-header reveal-up">
+          <span class="section-tag section-tag--light">House Favourites</span>
+          <h2 class="section-title section-title--light">Our Specialties</h2>
+          <p class="section-lead section-lead--light">Signature dishes that keep Newtown coming back</p>
+        </div>
+
+        <div class="specialties__grid">
+          <article class="specialty-card reveal-up" data-delay="0">
+            <div class="specialty-card__bg" style="background-image: url('../images/ubereats_011.jpg')"></div>
+            <div class="specialty-card__icon">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="32" cy="38" rx="24" ry="14" fill="rgba(212,175,55,0.15)" stroke="#D4AF37" stroke-width="1.5"/>
+                <path d="M14 38 Q32 20 50 38" stroke="#D4AF37" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <path d="M18 35 Q32 24 46 35" stroke="#D4AF37" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                <line x1="32" y1="22" x2="32" y2="14" stroke="#D4AF37" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="32" cy="13" r="2" fill="#D4AF37"/>
+              </svg>
+            </div>
+            <h3 class="specialty-card__title">Pork &amp; Chive Dumplings</h3>
+            <p class="specialty-card__desc">Juicy, hand-folded pork &amp; chive parcels steamed to perfection. Melt-in-your-mouth with every bite — our most beloved classic.</p>
+            <span class="specialty-card__price">$18.80</span>
+          </article>
+
+          <article class="specialty-card reveal-up" data-delay="100">
+            <div class="specialty-card__bg" style="background-image: url('../images/ubereats_012.jpg')"></div>
+            <div class="specialty-card__icon">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="32" cy="40" rx="26" ry="16" fill="rgba(196,30,58,0.1)" stroke="#C41E3A" stroke-width="1.5"/>
+                <path d="M10 40 Q32 18 54 40" stroke="#C41E3A" stroke-width="2" fill="rgba(196,30,58,0.05)" stroke-linecap="round"/>
+                <circle cx="22" cy="34" r="4" fill="rgba(196,30,58,0.3)" stroke="#C41E3A" stroke-width="1"/>
+                <circle cx="32" cy="30" r="4" fill="rgba(196,30,58,0.3)" stroke="#C41E3A" stroke-width="1"/>
+                <circle cx="42" cy="34" r="4" fill="rgba(196,30,58,0.3)" stroke="#C41E3A" stroke-width="1"/>
+              </svg>
+            </div>
+            <h3 class="specialty-card__title">Prawn &amp; Vegetable Dumplings</h3>
+            <p class="specialty-card__desc">Succulent prawns paired with crisp vegetables in a delicate, translucent wrapper. Light, fresh, and irresistible.</p>
+            <span class="specialty-card__price">$18.80</span>
+          </article>
+
+          <article class="specialty-card reveal-up" data-delay="200">
+            <div class="specialty-card__bg" style="background-image: url('../images/ubereats_017.jpg')"></div>
+            <div class="specialty-card__icon">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="12" y="36" width="40" height="18" rx="4" fill="rgba(212,175,55,0.1)" stroke="#D4AF37" stroke-width="1.5"/>
+                <path d="M14 36 Q18 20 32 18 Q46 20 50 36" stroke="#D4AF37" stroke-width="1.5" fill="none"/>
+                <path d="M18 32 Q32 28 46 32" stroke="#D4AF37" stroke-width="1" fill="none" stroke-dasharray="2 2"/>
+                <path d="M16 40 Q32 36 48 40" stroke="#D4AF37" stroke-width="1" fill="none"/>
+                <path d="M16 44 Q32 40 48 44" stroke="#D4AF37" stroke-width="1" fill="none"/>
+              </svg>
+            </div>
+            <h3 class="specialty-card__title">Wonton Noodle Soup</h3>
+            <p class="specialty-card__desc">Silky homemade noodles swimming in a rich, fragrant broth with pork &amp; prawn wontons. The ultimate comfort in a bowl.</p>
+            <span class="specialty-card__price">$23.80</span>
+          </article>
+
+          <article class="specialty-card reveal-up" data-delay="300">
+            <div class="specialty-card__bg" style="background-image: url('../images/ubereats_019.jpg')"></div>
+            <div class="specialty-card__icon">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="32" cy="36" rx="20" ry="12" fill="rgba(196,30,58,0.1)" stroke="#C41E3A" stroke-width="1.5"/>
+                <rect x="14" y="28" width="36" height="8" rx="2" fill="rgba(196,30,58,0.08)"/>
+                <path d="M20 24 Q32 16 44 24" stroke="#C41E3A" stroke-width="1.5" fill="none"/>
+                <line x1="26" y1="44" x2="24" y2="52" stroke="#C41E3A" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="38" y1="44" x2="40" y2="52" stroke="#C41E3A" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="specialty-card__title">Miso Eggplant</h3>
+            <p class="specialty-card__desc">Tender eggplant glazed with umami-rich miso, charred to perfection. A vegetarian masterpiece that steals the show.</p>
+            <span class="specialty-card__price">$16.80</span>
+          </article>
+
+          <article class="specialty-card reveal-up" data-delay="400">
+            <div class="specialty-card__bg" style="background-image: url('../images/ubereats_028.jpg')"></div>
+            <div class="specialty-card__icon">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="32" cy="40" rx="22" ry="13" fill="rgba(212,175,55,0.1)" stroke="#D4AF37" stroke-width="1.5"/>
+                <path d="M14 32 C14 32 20 20 32 20 C44 20 50 32 50 32" stroke="#D4AF37" stroke-width="1.5" fill="none"/>
+                <path d="M18 28 C22 22 42 22 46 28" stroke="#D4AF37" stroke-width="1" fill="none"/>
+                <circle cx="32" cy="38" r="5" fill="rgba(212,175,55,0.3)" stroke="#D4AF37" stroke-width="1"/>
+                <path d="M20 44 Q32 38 44 44" stroke="#D4AF37" stroke-width="1" fill="none"/>
+              </svg>
+            </div>
+            <h3 class="specialty-card__title">Pork &amp; Prawn Wontons</h3>
+            <p class="specialty-card__desc">Delicate wontons filled with a blend of pork and prawn, served in a silky aromatic sauce. A crowd-pleasing favourite.</p>
+            <span class="specialty-card__price">$21.80</span>
+          </article>
+
+          <article class="specialty-card reveal-up" data-delay="500">
+            <div class="specialty-card__bg" style="background-image: url('../images/ubereats_020.jpg')"></div>
+            <div class="specialty-card__icon">
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="32" cy="36" r="18" fill="rgba(196,30,58,0.08)" stroke="#C41E3A" stroke-width="1.5"/>
+                <path d="M20 36 Q26 28 32 32 Q38 36 44 28" stroke="#C41E3A" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <path d="M18 40 Q24 32 32 36 Q40 40 46 32" stroke="#C41E3A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                <line x1="26" y1="24" x2="28" y2="16" stroke="#C41E3A" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="36" y1="24" x2="38" y2="16" stroke="#C41E3A" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="specialty-card__title">Vegetable Tom Yum</h3>
+            <p class="specialty-card__desc">Bold, spicy, and aromatic Thai-inspired tom yum broth with seasonal vegetables. A warming bowl that ignites the senses.</p>
+            <span class="specialty-card__price">$21.80</span>
+          </article>
+        </div>
+
+        <!-- Order Delivery Apps -->
+        <div class="specialties__delivery reveal-up">
+          <p class="specialties__delivery-label">Order Delivery Via</p>
+          <div class="specialties__delivery-apps">
+            <a href="https://www.doordash.com/en-AU/store/dumpling-room-31818999/" target="_blank" rel="noopener" class="delivery-app-btn delivery-app-btn--doordash">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" fill="currentColor"/></svg>
+              DoorDash
+            </a>
+            <a href="https://www.ubereats.com/au/store/dumpling-room/U_jq1aO0QBaU9hpbsNCVpQ" target="_blank" rel="noopener" class="delivery-app-btn delivery-app-btn--ubereats">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z" fill="currentColor"/></svg>
+              Uber Eats
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         MENU SECTION
+    ============================================================ -->
+    <section class="menu-section section" id="menu">
+      <div class="container">
+        <div class="section-header reveal-up">
+          <span class="section-tag">Full Menu</span>
+          <h2 class="section-title">Explore Our Menu</h2>
+          <p class="section-lead">All dishes made fresh daily from quality ingredients</p>
+        </div>
+
+        <!-- Menu tabs -->
+        <div class="menu-tabs reveal-up" role="tablist" aria-label="Menu categories">
+          <button class="menu-tab menu-tab--active" role="tab" data-tab="dumplings" aria-selected="true">Dumplings</button>
+          <button class="menu-tab" role="tab" data-tab="noodles" aria-selected="false">Noodles &amp; Soups</button>
+          <button class="menu-tab" role="tab" data-tab="mains" aria-selected="false">Mains</button>
+          <button class="menu-tab" role="tab" data-tab="sides" aria-selected="false">Sides &amp; Drinks</button>
+          <button class="menu-tab" role="tab" data-tab="lunch" aria-selected="false">Lunch Specials</button>
+        </div>
+
+        <!-- Dumplings -->
+        <div class="menu-panel menu-panel--active" id="tab-dumplings" role="tabpanel">
+          <div class="menu-grid">
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Pork &amp; Chive Dumplings <span class="menu-item__tag">Bestseller</span></h4>
+                <p class="menu-item__desc">Handmade steamed dumplings with seasoned pork mince and fresh garlic chives</p>
+              </div>
+              <span class="menu-item__price">$18.80</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Prawn &amp; Vegetable Dumplings</h4>
+                <p class="menu-item__desc">Delicate prawns with seasonal vegetables, wrapped in translucent dumpling skin</p>
+              </div>
+              <span class="menu-item__price">$18.80</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Vegetarian Dumplings <span class="menu-item__tag menu-item__tag--veg">V</span></h4>
+                <p class="menu-item__desc">Tofu, glass noodles, shiitake mushroom and seasonal greens in soft dumpling skin</p>
+              </div>
+              <span class="menu-item__price">$18.80</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Pan-Fried Dumplings (Gyoza)</h4>
+                <p class="menu-item__desc">Crispy golden-bottom dumplings pan-fried to perfection, served with ponzu dipping sauce</p>
+              </div>
+              <span class="menu-item__price">$19.80</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Xiao Long Bao (Soup Dumplings)</h4>
+                <p class="menu-item__desc">Delicate soup-filled dumplings with pork filling — handle with care, explosive flavour inside</p>
+              </div>
+              <span class="menu-item__price">$22.80</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Pork &amp; Prawn Wontons</h4>
+                <p class="menu-item__desc">Silky wontons in chilli oil or aromatic broth, with minced pork and whole prawn</p>
+              </div>
+              <span class="menu-item__price">$21.80</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Noodles & Soups -->
+        <div class="menu-panel" id="tab-noodles" role="tabpanel" hidden>
+          <div class="menu-grid">
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Wonton Noodle Soup <span class="menu-item__tag">Bestseller</span></h4>
+                <p class="menu-item__desc">Homemade egg noodles in rich pork bone broth with pork &amp; prawn wontons</p>
+              </div>
+              <span class="menu-item__price">$23.80</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Vegetable Tom Yum</h4>
+                <p class="menu-item__desc">Fragrant Thai-style spicy &amp; sour broth with seasonal vegetables and rice noodles</p>
+              </div>
+              <span class="menu-item__price">$21.80</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Dan Dan Noodles</h4>
+                <p class="menu-item__desc">Sichuan-style noodles in sesame-chilli sauce with minced pork and crushed peanuts</p>
+              </div>
+              <span class="menu-item__price">$22.80</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Laksa</h4>
+                <p class="menu-item__desc">Coconut-based curry broth with rice vermicelli, prawns, tofu puffs and bean sprouts</p>
+              </div>
+              <span class="menu-item__price">$24.80</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Beef Pho</h4>
+                <p class="menu-item__desc">Vietnamese star anise &amp; ginger bone broth with rice noodles and tender sliced beef</p>
+              </div>
+              <span class="menu-item__price">$24.80</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Stir-Fried Noodles</h4>
+                <p class="menu-item__desc">Wok-tossed egg noodles with seasonal vegetables in light soy and oyster sauce</p>
+              </div>
+              <span class="menu-item__price">$20.80</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mains -->
+        <div class="menu-panel" id="tab-mains" role="tabpanel" hidden>
+          <div class="menu-grid">
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Miso Eggplant <span class="menu-item__tag menu-item__tag--veg">V</span></h4>
+                <p class="menu-item__desc">Slow-roasted eggplant glazed with white miso, mirin and sesame — served with steamed rice</p>
+              </div>
+              <span class="menu-item__price">$16.80</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Twice-Cooked Pork Belly</h4>
+                <p class="menu-item__desc">Soft braised then wok-fried pork belly with capsicum, leek and spicy bean paste</p>
+              </div>
+              <span class="menu-item__price">$26.80</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Salt &amp; Pepper Calamari</h4>
+                <p class="menu-item__desc">Crispy calamari rings tossed with green chilli, shallots and fragrant five-spice salt</p>
+              </div>
+              <span class="menu-item__price">$22.80</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Kung Pao Chicken</h4>
+                <p class="menu-item__desc">Wok-tossed chicken with Sichuan peppercorn, dried chilli, peanuts and spring onion</p>
+              </div>
+              <span class="menu-item__price">$24.80</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Prawn Fried Rice</h4>
+                <p class="menu-item__desc">Wok-hei jasmine rice with tiger prawns, egg, shallots and light soy — a comfort classic</p>
+              </div>
+              <span class="menu-item__price">$23.80</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Mapo Tofu <span class="menu-item__tag menu-item__tag--veg">V</span></h4>
+                <p class="menu-item__desc">Silken tofu in a spicy, numbing Sichuan sauce with doubanjiang and Sichuan peppercorn</p>
+              </div>
+              <span class="menu-item__price">$19.80</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sides -->
+        <div class="menu-panel" id="tab-sides" role="tabpanel" hidden>
+          <div class="menu-grid">
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Steamed Jasmine Rice <span class="menu-item__tag menu-item__tag--veg">V</span></h4>
+                <p class="menu-item__desc">Fluffy fragrant jasmine rice</p>
+              </div>
+              <span class="menu-item__price">$4.00</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Edamame <span class="menu-item__tag menu-item__tag--veg">V</span></h4>
+                <p class="menu-item__desc">Lightly salted steamed edamame pods</p>
+              </div>
+              <span class="menu-item__price">$8.00</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Spring Rolls (4 pcs)</h4>
+                <p class="menu-item__desc">Crispy vegetable spring rolls with sweet chilli dipping sauce</p>
+              </div>
+              <span class="menu-item__price">$11.00</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Jasmine Tea (pot)</h4>
+                <p class="menu-item__desc">Fragrant loose-leaf jasmine green tea — free refills</p>
+              </div>
+              <span class="menu-item__price">$5.00</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Asian Soft Drinks</h4>
+                <p class="menu-item__desc">Selection of Asian sodas — ramune, calpico, yuzu lemonade</p>
+              </div>
+              <span class="menu-item__price">$4.50</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Sauces</h4>
+                <p class="menu-item__desc">Chilli oil, black vinegar, soy-ginger, house XO sauce</p>
+              </div>
+              <span class="menu-item__price">$2.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lunch Specials -->
+        <div class="menu-panel" id="tab-lunch" role="tabpanel" hidden>
+          <div class="lunch-banner reveal-up">
+            <div class="lunch-banner__inner">
+              <span class="lunch-banner__label">Mon–Fri · 11:30 AM – 3:00 PM</span>
+              <h3 class="lunch-banner__title">Lunch Specials</h3>
+              <p class="lunch-banner__desc">Outstanding value — main + rice + soup</p>
+            </div>
+          </div>
+          <div class="menu-grid">
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Dumpling Lunch Set</h4>
+                <p class="menu-item__desc">8 pork &amp; chive dumplings + egg drop soup + steamed rice</p>
+              </div>
+              <span class="menu-item__price">$15.90</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Noodle Soup Lunch Set</h4>
+                <p class="menu-item__desc">Bowl of wonton noodle soup + spring roll + house iced tea</p>
+              </div>
+              <span class="menu-item__price">$16.90</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Main + Rice Lunch Set</h4>
+                <p class="menu-item__desc">Any main dish + steamed rice + miso soup</p>
+              </div>
+              <span class="menu-item__price">$17.90</span>
+            </div>
+            <div class="menu-item reveal-up">
+              <div class="menu-item__info">
+                <h4 class="menu-item__name">Veggie Lunch Set <span class="menu-item__tag menu-item__tag--veg">V</span></h4>
+                <p class="menu-item__desc">Vegetarian dumplings + miso eggplant + steamed rice</p>
+              </div>
+              <span class="menu-item__price">$15.90</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         GALLERY SECTION
+    ============================================================ -->
+    <section class="gallery section section--warm" id="gallery">
+      <div class="container">
+        <div class="section-header reveal-up">
+          <span class="section-tag">Gallery</span>
+          <h2 class="section-title">Feast for the Eyes</h2>
+          <p class="section-lead">A taste of what awaits you at Dumpling Room</p>
+        </div>
+
+        <div class="gallery__grid">
+          <!-- Gallery items with real images (fallback to CSS art) -->
+
+          <!-- Item 1: Steamed Dumplings -->
+          <div class="gallery-item gallery-item--lg reveal-up" data-delay="0">
+            <div class="gallery-item__art gallery-art--dumplings-steam">
+              <!-- Real image will load here via JavaScript -->
+              <img class="gallery-item__image" src="" alt="Steamed Dumplings" loading="lazy" data-src="../images/ubereats_011_upscaled_x2.jpg,../images/wheree_042.jpg">
+              <!-- Fallback to CSS art if image fails -->
+              <div class="food-art fa-steam-bowl" style="display: none;">
+                <div class="fa-steam-bowl__steam s1"></div>
+                <div class="fa-steam-bowl__steam s2"></div>
+                <div class="fa-steam-bowl__steam s3"></div>
+                <div class="fa-steam-bowl__lid"></div>
+                <div class="fa-steam-bowl__body">
+                  <div class="fa-steam-bowl__tier"></div>
+                </div>
+                <div class="fa-steam-bowl__base"></div>
+              </div>
+            </div>
+            <div class="gallery-item__overlay">
+              <span>Steamed Dumplings</span>
+            </div>
+          </div>
+
+          <!-- Item 2: Noodle Soups -->
+          <div class="gallery-item reveal-up" data-delay="100">
+            <div class="gallery-item__art gallery-art--noodles">
+              <img class="gallery-item__image" src="" alt="Noodle Soups" loading="lazy" data-src="../images/ubereats_012_upscaled_x2.jpg,../images/ubereats_013_upscaled_x2.jpg">
+              <div class="food-art fa-noodle-bowl" style="display: none;">
+                <div class="fa-noodle-bowl__body">
+                  <div class="fa-noodle-bowl__noodle n1"></div>
+                  <div class="fa-noodle-bowl__noodle n2"></div>
+                  <div class="fa-noodle-bowl__noodle n3"></div>
+                  <div class="fa-noodle-bowl__broth"></div>
+                </div>
+                <div class="fa-noodle-bowl__chopstick left"></div>
+                <div class="fa-noodle-bowl__chopstick right"></div>
+              </div>
+            </div>
+            <div class="gallery-item__overlay">
+              <span>Noodle Soups</span>
+            </div>
+          </div>
+
+          <!-- Item 3: Pan-Fried Gyoza -->
+          <div class="gallery-item reveal-up" data-delay="150">
+            <div class="gallery-item__art gallery-art--gyoza">
+              <img class="gallery-item__image" src="" alt="Pan-Fried Gyoza" loading="lazy" data-src="../images/ubereats_014_upscaled_x2.jpg,../images/ubereats_015_upscaled_x2.jpg">
+              <div class="food-art fa-gyoza-plate" style="display: none;">
+                <div class="fa-gyoza-plate__plate"></div>
+                <div class="fa-gyoza-plate__gyoza g1"></div>
+                <div class="fa-gyoza-plate__gyoza g2"></div>
+                <div class="fa-gyoza-plate__gyoza g3"></div>
+                <div class="fa-gyoza-plate__gyoza g4"></div>
+                <div class="fa-gyoza-plate__gyoza g5"></div>
+                <div class="fa-gyoza-plate__sauce"></div>
+              </div>
+            </div>
+            <div class="gallery-item__overlay">
+              <span>Pan-Fried Gyoza</span>
+            </div>
+          </div>
+
+          <!-- Item 4: Wonton Soup -->
+          <div class="gallery-item gallery-item--lg reveal-up" data-delay="200">
+            <div class="gallery-item__art gallery-art--wonton">
+              <img class="gallery-item__image" src="" alt="Wonton Soup" loading="lazy" data-src="../images/ubereats_017_upscaled_x2.jpg,../images/ubereats_018_upscaled_x2.jpg">
+              <div class="food-art fa-wonton" style="display: none;">
+                <div class="fa-wonton__bowl">
+                  <div class="fa-wonton__broth"></div>
+                  <div class="fa-wonton__wonton w1"></div>
+                  <div class="fa-wonton__wonton w2"></div>
+                  <div class="fa-wonton__wonton w3"></div>
+                  <div class="fa-wonton__herb"></div>
+                </div>
+              </div>
+            </div>
+            <div class="gallery-item__overlay">
+              <span>Wonton Soup</span>
+            </div>
+          </div>
+
+          <!-- Item 5: Miso Eggplant -->
+          <div class="gallery-item reveal-up" data-delay="250">
+            <div class="gallery-item__art gallery-art--eggplant">
+              <img class="gallery-item__image" src="" alt="Miso Eggplant" loading="lazy" data-src="../images/ubereats_019_upscaled_x2.jpg,../images/ubereats_020_upscaled_x2.jpg">
+              <div class="food-art fa-eggplant" style="display: none;">
+                <div class="fa-eggplant__plate"></div>
+                <div class="fa-eggplant__piece p1"></div>
+                <div class="fa-eggplant__piece p2"></div>
+                <div class="fa-eggplant__miso"></div>
+                <div class="fa-eggplant__sesame"></div>
+              </div>
+            </div>
+            <div class="gallery-item__overlay">
+              <span>Miso Eggplant</span>
+            </div>
+          </div>
+
+          <!-- Item 6: Xiao Long Bao -->
+          <div class="gallery-item reveal-up" data-delay="300">
+            <div class="gallery-item__art gallery-art--xlb">
+              <img class="gallery-item__image" src="" alt="Xiao Long Bao" loading="lazy" data-src="../images/ubereats_028_upscaled_x2.jpg,../images/wheree_043.jpg">
+              <div class="food-art fa-xlb" style="display: none;">
+                <div class="fa-xlb__bamboo">
+                  <div class="fa-xlb__xlb x1"></div>
+                  <div class="fa-xlb__xlb x2"></div>
+                  <div class="fa-xlb__xlb x3"></div>
+                  <div class="fa-xlb__xlb x4"></div>
+                </div>
+              </div>
+            </div>
+            <div class="gallery-item__overlay">
+              <span>Xiao Long Bao</span>
+            </div>
+          </div>
+
+          <!-- Premium Hero Photos (Upscaled) -->
+
+          <!-- Item: Fresh Dumplings Close-up -->
+          <div class="gallery-item gallery-item--lg reveal-up" data-delay="350">
+            <div class="gallery-item__art">
+              <img class="gallery-item__image" src="" alt="Fresh Handcrafted Dumplings" loading="lazy" data-src="../images/dumpling_hero_1_upscaled_x4.jpg">
+            </div>
+            <div class="gallery-item__overlay">
+              <span>Handcrafted Excellence</span>
+            </div>
+          </div>
+
+          <!-- Item: Premium Presentation -->
+          <div class="gallery-item reveal-up" data-delay="400">
+            <div class="gallery-item__art">
+              <img class="gallery-item__image" src="" alt="Premium Dumpling Presentation" loading="lazy" data-src="../images/dumpling_hero_3_upscaled_x4.jpg">
+            </div>
+            <div class="gallery-item__overlay">
+              <span>Pan-Seared Perfection</span>
+            </div>
+          </div>
+
+          <!-- Item: Luxury Service -->
+          <div class="gallery-item reveal-up" data-delay="450">
+            <div class="gallery-item__art">
+              <img class="gallery-item__image" src="" alt="Premium Service & Ambiance" loading="lazy" data-src="../images/dumpling_hero_4_upscaled_x4.jpg">
+            </div>
+            <div class="gallery-item__overlay">
+              <span>Dining Excellence</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         TESTIMONIALS SECTION
+    ============================================================ -->
+    <section class="testimonials section section--dark" id="testimonials">
+      <div class="container">
+        <div class="section-header reveal-up">
+          <span class="section-tag section-tag--light">Reviews</span>
+          <h2 class="section-title section-title--light">What People Say</h2>
+        </div>
+
+        <div class="testimonials__track" id="testimonialsTrack">
+          <article class="testimonial-card reveal-up" data-delay="0">
+            <div class="testimonial-card__stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <blockquote class="testimonial-card__quote">
+              "The pork &amp; chive dumplings are absolutely incredible. Thin, silky skin, perfectly seasoned filling — I've tried dumplings all over Sydney and these are the best. We come every week."
+            </blockquote>
+            <footer class="testimonial-card__author">
+              <div class="testimonial-card__avatar">S</div>
+              <div>
+                <strong>Sarah M.</strong>
+                <span>Newtown Local</span>
+              </div>
+            </footer>
+          </article>
+
+          <article class="testimonial-card reveal-up" data-delay="100">
+            <div class="testimonial-card__stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <blockquote class="testimonial-card__quote">
+              "Amazing value for money — especially the lunch specials. The wonton noodle soup has the most flavourful broth I've ever had. Staff are always friendly and welcoming."
+            </blockquote>
+            <footer class="testimonial-card__author">
+              <div class="testimonial-card__avatar">J</div>
+              <div>
+                <strong>James T.</strong>
+                <span>University of Sydney Student</span>
+              </div>
+            </footer>
+          </article>
+
+          <article class="testimonial-card reveal-up" data-delay="200">
+            <div class="testimonial-card__stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <blockquote class="testimonial-card__quote">
+              "Sitting by the window watching King Street go by with a bowl of laksa and perfectly folded dumplings — pure Newtown bliss. This place never disappoints."
+            </blockquote>
+            <footer class="testimonial-card__author">
+              <div class="testimonial-card__avatar">M</div>
+              <div>
+                <strong>Michelle K.</strong>
+                <span>Food Blogger, Sydney</span>
+              </div>
+            </footer>
+          </article>
+
+          <article class="testimonial-card reveal-up" data-delay="300">
+            <div class="testimonial-card__stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <blockquote class="testimonial-card__quote">
+              "Best dumpling joint in all of Sydney. The miso eggplant is a revelation — creamy, smoky, rich. The Xiao Long Bao are dangerous, you'll eat a dozen before you know it."
+            </blockquote>
+            <footer class="testimonial-card__author">
+              <div class="testimonial-card__avatar">D</div>
+              <div>
+                <strong>Daniel R.</strong>
+                <span>Inner West Foodie</span>
+              </div>
+            </footer>
+          </article>
+        </div>
+        <div class="testimonials__dots" id="testimonialsDots" aria-label="Testimonial navigation">
+          <button class="dot dot--active" aria-label="Testimonial 1"></button>
+          <button class="dot" aria-label="Testimonial 2"></button>
+          <button class="dot" aria-label="Testimonial 3"></button>
+          <button class="dot" aria-label="Testimonial 4"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         HOURS & LOCATION SECTION
+    ============================================================ -->
+    <section class="hours-section section" id="hours">
+      <div class="container">
+        <div class="visit-header">
+          <span class="section-tag">Visit Us</span>
+          <h2 class="section-title">Visit Us</h2>
+        </div>
+
+        <div class="hours-grid">
+          <!-- Info Box (Left) -->
+          <div class="hours-glass-card reveal-left">
+            <!-- Location -->
+            <div class="hours-item">
+              <div class="hours-item__icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              </div>
+              <div class="hours-item__content">
+                <h4 class="hours-item__title">Location</h4>
+                <p class="hours-item__text">124 King Street, Newtown NSW 2042</p>
+              </div>
+            </div>
+
+            <!-- Phone -->
+            <div class="hours-item">
+              <div class="hours-item__icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+              </div>
+              <div class="hours-item__content">
+                <h4 class="hours-item__title">Phone</h4>
+                <a href="tel:+61295161640" class="hours-item__link">(02) 9516 1640</a>
+              </div>
+            </div>
+
+            <!-- Hours -->
+            <div class="hours-item">
+              <div class="hours-item__icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+              <div class="hours-item__content">
+                <h4 class="hours-item__title">Hours</h4>
+                <p class="hours-item__text">11:30 AM – 11:00 PM Daily</p>
+              </div>
+            </div>
+
+            <!-- Instagram -->
+            <div class="hours-item">
+              <div class="hours-item__icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+              </div>
+              <div class="hours-item__content">
+                <h4 class="hours-item__title">Instagram</h4>
+                <a href="https://www.instagram.com/dumplingroomkingst/" target="_blank" rel="noopener" class="hours-item__link">@dumplingroomkingst</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Map Box (Right) -->
+          <div class="hours-glass-card hours-glass-map reveal-right">
+            <iframe
+              title="Dumpling Room Location on Google Maps"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3312.3671254074117!2d151.17730381521!3d-33.8975!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12b1d2d2d2d2d2%3A0x1!2s124+King+St%2C+Newtown+NSW+2042%2C+Australia!5e0!3m2!1sen!2sau!4v1610000000000!5m2!1sen!2sau"
+              width="100%"
+              height="100%"
+              style="border:0;min-height:400px;"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+            <div class="map-overlay">
+              <a href="https://maps.google.com/?q=124+King+St+Newtown+NSW+2042" target="_blank" rel="noopener" class="map-cta">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+                Get Directions
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer class="footer">
+    <div class="footer__top">
+      <div class="container">
+        <div class="footer__grid">
+          <div class="footer__brand">
+            <a href="#hero" class="logo logo--light" aria-label="Dumpling Room">
+              <span class="logo__text">
+                <span class="logo__name">Dumpling Room</span>
+                <span class="logo__tagline">Pan-Asian Dining</span>
+              </span>
+            </a>
+            <p class="footer__desc">Handcrafted dumplings &amp; noodles in the heart of Newtown, Sydney. Open daily from 11:30 AM.</p>
+            <div class="footer__social">
+              <a href="https://www.instagram.com/dumpling.room/" target="_blank" rel="noopener" aria-label="Instagram">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <nav class="footer__nav" aria-label="Footer navigation">
+            <h4 class="footer__nav-title">Navigate</h4>
+            <ul>
+              <li><a href="#about">Our Story</a></li>
+              <li><a href="#specialties">Specialties</a></li>
+              <li><a href="#menu">Menu</a></li>
+              <li><a href="#gallery">Gallery</a></li>
+              <li><a href="#hours">Location &amp; Hours</a></li>
+            </ul>
+          </nav>
+
+          <div class="footer__hours">
+            <h4 class="footer__nav-title">Opening Hours</h4>
+            <ul>
+              <li><span>Mon – Sun</span><span>11:30 AM – 11:00 PM</span></li>
+              <li><span>Lunch Specials</span><span>Until 3:00 PM</span></li>
+              <li><span>Delivery</span><span>DoorDash &amp; Uber Eats</span></li>
+            </ul>
+          </div>
+
+          <div class="footer__contact">
+            <h4 class="footer__nav-title">Contact</h4>
+            <ul>
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+                124 King St, Newtown
+              </li>
+              <li>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                <a href="tel:+61295161640">(02) 9516 1640</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <div class="container">
+        <div class="footer__bottom-content">
+          <div class="footer__original">
+            <p>&copy; 2026 Dumpling Room Newtown. All rights reserved.</p>
+            <p>Designed with love for the Newtown community.</p>
+          </div>
+
+          <div class="footer__dmix">
+            <p class="footer__signature">Concept redesigned by <strong>DMIX Media Works</strong> 2026 - Not affiliated. Private Proposal.</p>
+          </div>
+
+          <div class="footer__approval">
+            <div class="footer__countdown">
+              <span class="countdown-icon">⏰</span>
+              <span id="countdownTimer">This preview expires in 7 days</span>
+            </div>
+            <p class="footer__approval-text">Approval required to proceed with full deployment</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to top -->
+  <button class="back-to-top" id="backToTop" aria-label="Back to top" hidden>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+  </button>
+
+  <script src="app.js"></script>
+</body>
+</html>

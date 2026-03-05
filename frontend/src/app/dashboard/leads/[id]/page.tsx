@@ -4,7 +4,7 @@ import { useState, use } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import * as Tabs from "@radix-ui/react-tabs"
-import { useLead, useApproveLead, useRejectLead, useGenerateLovableUrl, useSetLeadPriority } from "@/hooks/useLeads"
+import { useLead, useGenerateLovableUrl, useSetLeadPriority } from "@/hooks/useLeads"
 import StatusBadge from "@/components/ui/StatusBadge"
 import Toast from "@/components/ui/Toast"
 import { getLovablePrompt, renderPrompt } from "@/lib/lovablePrompt"
@@ -15,49 +15,22 @@ import DealTab from "./_tabs/DealTab"
 import PreviewTab from "./_tabs/PreviewTab"
 import MessagesTab from "./_tabs/MessagesTab"
 
-export default function LeadDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function LeadDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams?: Promise<Record<string, string | string[]>>
+}) {
   const { id } = use(params)
+  const sp = use(searchParams || Promise.resolve({})) as Record<string, string | string[]>
   const router = useRouter()
   const qc = useQueryClient()
   const { data: lead, isLoading } = useLead(id)
-  const approveLead = useApproveLead()
-  const rejectLead = useRejectLead()
   const generateLovableUrl = useGenerateLovableUrl()
   const setLeadPriority = useSetLeadPriority()
-  const [activeTab, setActiveTab] = useState("overview")
+  const [activeTab, setActiveTab] = useState((sp?.tab as string) || "overview")
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null)
-
-  const handleApprove = () => {
-    approveLead.mutate(id, {
-      onSuccess: () => {
-        setToast({ message: "Lead aprovado com sucesso! ✨ Clique no botão Lovable para começar.", type: "success" })
-        // Invalidate lead cache to refresh data
-        qc.invalidateQueries({ queryKey: ["lead", id] })
-        qc.invalidateQueries({ queryKey: ["leads"] })
-      },
-      onError: (error) => {
-        console.error("Error approving lead:", error)
-        setToast({ message: "Erro ao aprovar lead", type: "error" })
-      },
-    })
-  }
-
-  const handleReject = async () => {
-    rejectLead.mutate(id, {
-      onSuccess: () => {
-        setToast({ message: "Lead recusado com sucesso!", type: "success" })
-        // Invalidate cache and redirect
-        qc.invalidateQueries({ queryKey: ["leads"] })
-        setTimeout(() => {
-          router.push("/dashboard/leads")
-        }, 500)
-      },
-      onError: (error) => {
-        console.error("Error rejecting lead:", error)
-        setToast({ message: "Erro ao rejeitar lead", type: "error" })
-      },
-    })
-  }
 
   const handleOpenWebsite = () => {
     if (lead?.website_url) {
@@ -76,6 +49,10 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
       suburb: lead?.suburb,
       phone: lead?.phone,
       website_url: lead?.website_url,
+      email: lead?.emails?.[0] || undefined,
+      industry: lead?.industry_category,
+      address: lead?.address,
+      instagram: lead?.instagram_url,
     })
 
     generateLovableUrl.mutate({ id, prompt: renderedPrompt }, {

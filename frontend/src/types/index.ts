@@ -4,6 +4,15 @@ export interface User {
   role: "admin" | "operator"
 }
 
+export interface ActivePreviewSummary {
+  id: string
+  preview_url: string
+  expires_at: string
+  is_archived: boolean
+  archive_reason?: string
+  archived_at?: string
+}
+
 export interface Lead {
   id: string
   business_name: string
@@ -20,6 +29,8 @@ export interface Lead {
   notes?: string
   created_at: string
   updated_at: string
+  status_changed_at: string
+  active_preview?: ActivePreviewSummary
 }
 
 export interface Task {
@@ -58,6 +69,7 @@ export interface LovablePreview {
   old_website_url?: string
   is_archived: boolean
   archive_reason?: string
+  archived_at?: string
   created_at: string
   expires_at: string
 }

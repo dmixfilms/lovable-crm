@@ -21,7 +21,7 @@ scheduler = BackgroundScheduler(
 
 def register_jobs():
     """Register all scheduled jobs"""
-    from app.workers import daily_import, email_discovery, preview_expiration, followup_scheduler
+    from app.workers import daily_import, email_discovery, preview_expiration, followup_scheduler, backup, instagram_auto_search
 
     # Daily import at 7 AM Sydney time
     scheduler.add_job(
@@ -57,6 +57,34 @@ def register_jobs():
         CronTrigger(hour=settings.followup_scheduler_hour, minute=settings.followup_scheduler_minute),
         id="followup_scheduler",
         name="Follow-up Scheduler",
+        replace_existing=True,
+    )
+
+    # Database backup every 6 hours (4 times per day)
+    scheduler.add_job(
+        backup.create_backup,
+        "interval",
+        hours=6,
+        id="database_backup",
+        name="Database Backup",
+        replace_existing=True,
+    )
+
+    # Instagram auto search 5 minutes AFTER daily import (to avoid conflicts)
+    import datetime as dt
+    import pytz
+    tz = pytz.timezone(settings.timezone)
+    daily_import_hour = settings.daily_import_hour
+    daily_import_minute = settings.daily_import_minute + 5  # Add 5 minutes
+    if daily_import_minute >= 60:
+        daily_import_hour += 1
+        daily_import_minute -= 60
+
+    scheduler.add_job(
+        instagram_auto_search.run_instagram_auto_search,
+        CronTrigger(hour=daily_import_hour, minute=daily_import_minute),
+        id="instagram_auto_search",
+        name="Instagram Auto Search (after daily import)",
         replace_existing=True,
     )
 

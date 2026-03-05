@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Prompt Cache</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 500px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background-color: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background-color: #764ba2;
+        }
+        .code {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-family: monospace;
+            word-break: break-all;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Limpar Cache do Prompt</h1>
+
+        <div id="status"></div>
+
+        <button onclick="clearCache()">🗑️ Limpar Cache Agora</button>
+        <button onclick="checkCache()">🔍 Verificar Cache</button>
+        <button onclick="goToSettings()">⚙️ Ir para Settings</button>
+
+        <div id="details"></div>
+    </div>
+
+    <script>
+        function clearCache() {
+            const status = document.getElementById('status');
+            const details = document.getElementById('details');
+
+            // Remove all old and new prompt keys
+            localStorage.removeItem('lovable_prompt');
+            localStorage.removeItem('lovable_prompt_v2');
+            sessionStorage.removeItem('lovable_prompt');
+            sessionStorage.removeItem('lovable_prompt_v2');
+
+            status.innerHTML = '<div class="status success">✅ Cache limpo com sucesso!</div>';
+
+            details.innerHTML = `
+                <div class="status info">
+                    <strong>O que foi removido:</strong>
+                    <div class="code">
+                        • localStorage.lovable_prompt<br>
+                        • localStorage.lovable_prompt_v2<br>
+                        • sessionStorage.lovable_prompt<br>
+                        • sessionStorage.lovable_prompt_v2
+                    </div>
+                </div>
+                <p><strong>Próximos passos:</strong></p>
+                <ol style="text-align: left;">
+                    <li>Clique em "Ir para Settings"</li>
+                    <li>Salve seu novo prompt</li>
+                    <li>Volte para Leads</li>
+                    <li>Clique em Preview →</li>
+                    <li>Cheque se o novo prompt tá sendo usado</li>
+                </ol>
+            `;
+
+            setTimeout(() => {
+                location.reload();
+            }, 3000);
+        }
+
+        function checkCache() {
+            const status = document.getElementById('status');
+            const details = document.getElementById('details');
+
+            const old = localStorage.getItem('lovable_prompt');
+            const new_ = localStorage.getItem('lovable_prompt_v2');
+
+            let html = '<div class="status info"><strong>Cache atual:</strong><br>';
+            html += old ? '❌ lovable_prompt (ANTIGO) - ' + old.substring(0, 30) + '...<br>' : '✅ lovable_prompt - vazio<br>';
+            html += new_ ? '✅ lovable_prompt_v2 (NOVO) - ' + new_.substring(0, 30) + '...<br>' : '❌ lovable_prompt_v2 - vazio<br>';
+            html += '</div>';
+
+            details.innerHTML = html;
+
+            if (old && !new_) {
+                status.innerHTML = '<div class="status success">⚠️ Só tem prompt antigo! Clique "Limpar Cache"</div>';
+            } else if (new_) {
+                status.innerHTML = '<div class="status success">✅ Prompt novo presente!</div>';
+            } else {
+                status.innerHTML = '<div class="status info">ℹ️ Nenhum prompt salvo</div>';
+            }
+        }
+
+        function goToSettings() {
+            window.location.href = 'http://localhost:3000/dashboard/settings';
+        }
+
+        // Check on load
+        window.addEventListener('load', checkCache);
+    </script>
+</body>
+</html>

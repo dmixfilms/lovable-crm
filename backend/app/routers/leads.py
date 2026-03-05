@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Body
 from sqlalchemy.orm import Session
 from typing import Optional
 from app.database import get_db
@@ -6,6 +6,7 @@ from app.dependencies import get_current_user
 from app.models.user import User
 from app.schemas.lead import LeadCreate, LeadUpdate, LeadResponse, LeadListResponse
 from app.services.lead_service import LeadService
+from app.services.instagram_scraper import search_instagram_auto
 
 router = APIRouter()
 
@@ -116,6 +117,7 @@ def reject_lead(
 def generate_lovable_url(
     lead_id: str,
     db: Session = Depends(get_db),
+    body: dict = Body(default={}),
 ):
     """Generate Lovable Build with URL for creating website preview"""
     from urllib.parse import quote
@@ -134,8 +136,14 @@ def generate_lovable_url(
     owner_name = lead.owner_name or "Business Owner"
     industry = lead.industry_category or "Professional Services"
 
-    # Build comprehensive prompt for Lovable
-    prompt = f"""
+    # USE CUSTOM PROMPT IF PROVIDED, OTHERWISE USE DEFAULT
+    custom_prompt = body.get("prompt") if body else None
+    if custom_prompt and isinstance(custom_prompt, str) and len(custom_prompt) > 20:
+        prompt = custom_prompt
+        print(f"✅ CUSTOM PROMPT RECEIVED! Using {len(prompt)} chars from frontend")
+    else:
+        # Build default prompt for Lovable (if no custom prompt provided)
+        prompt = f"""
 ⚠️ CRITICAL REQUIREMENTS - PLEASE READ CAREFULLY ⚠️
 
 YOU ARE A PREMIUM WEB DESIGNER. Create an exceptional, modern website redesign for {lead.business_name}.
@@ -293,3 +301,79 @@ Before finishing, verify:
         "business_name": lead.business_name,
         "message": "Open this URL in a new tab to create the website preview. When ready, come back and add the preview link."
     }
+
+
+@router.post("/{lead_id}/search-instagram")
+async def search_instagram(
+    lead_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Search Instagram using saved session
+    """
+    from app.services.instagram_search import search_instagram
+
+    service = LeadService(db)
+    lead = service.get_lead(lead_id)
+
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    if not lead.address:
+        raise HTTPException(status_code=400, detail="Lead address is required for matching")
+
+    # Search Instagram
+    result = await search_instagram(
+        business_name=lead.business_name,
+        original_address=lead.address
+    )
+
+    # If perfect match found, update lead automatically
+    if result.get('success') and result.get('address_match'):
+        lead.instagram_url = result['instagram_url']
+        if result.get('phone') and not lead.phone:
+            lead.phone = result['phone']
+        db.commit()
+        db.refresh(lead)
+
+    return result
+
+
+@router.post("/instagram/init-login")
+async def init_instagram_login(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Initialize Instagram session
+    Opens browser for manual login, saves session for future searches
+    """
+    from app.services.instagram_search import authenticate_instagram_interactive
+
+    try:
+        print("🔐 Starting Instagram login...")
+        await authenticate_instagram_interactive()
+        return {
+            "success": True,
+            "message": "✅ Login concluído! Session salva. Você pode buscar leads agora.",
+            "status": "authenticated"
+        }
+    except Exception as e:
+        print(f"❌ Error: {str(e)}")
+        return {
+            "success": False,
+            "message": f"Error: {str(e)}",
+            "status": "error"
+        }
+
+@router.get("/instagram/status")
+async def get_instagram_status(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Get current Instagram session status"""
+    from app.services.instagram_session_manager import InstagramSessionManager
+
+    status = InstagramSessionManager.get_status()
+    return status

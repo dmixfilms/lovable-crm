@@ -7,6 +7,7 @@ from .lovable_preview import LovablePreview
 from .message_template import MessageTemplate
 from .outbound_message import OutboundMessage
 from .lead_import_run import LeadImportRun
+from .settings import AppSettings
 
 __all__ = [
     "User",
@@ -19,4 +20,5 @@ __all__ = [
     "MessageTemplate",
     "OutboundMessage",
     "LeadImportRun",
+    "AppSettings",
 ]

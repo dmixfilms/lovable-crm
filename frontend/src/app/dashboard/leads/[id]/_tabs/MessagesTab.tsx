@@ -61,8 +61,8 @@ export default function MessagesTab({ leadId, lead, onSaved }: MessagesTabProps)
     rendered = rendered.replace(/\{\{final_price\}\}/g, finalPrice)
     rendered = rendered.replace(/\{\{final_price_aud\}\}/g, finalPrice)
 
-    const paymentLink = deal?.payment_link || ""
-    rendered = rendered.replace(/\{\{payment_link\}\}/g, paymentLink)
+    // Payment link placeholder (can be added to templates)
+    rendered = rendered.replace(/\{\{payment_link\}\}/g, "")
 
     return rendered
   }

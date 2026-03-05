@@ -40,6 +40,23 @@ export function useArchivePreview(leadId: string) {
       })
       return data as LovablePreview
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["previews", leadId] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["previews", leadId] })
+      // Invalidate leads list to refresh active_preview field
+      qc.invalidateQueries({ queryKey: ["leads"] })
+    },
+  })
+}
+
+export function useDeletePreview(leadId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (previewId: string) => {
+      await api.delete(`/leads/${leadId}/preview/${previewId}`)
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["previews", leadId] })
+      qc.invalidateQueries({ queryKey: ["leads"] })
+    },
   })
 }
