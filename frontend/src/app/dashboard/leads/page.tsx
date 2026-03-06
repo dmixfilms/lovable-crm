@@ -53,6 +53,7 @@ export default function LeadsPage() {
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null)
   const [newCapturedCount, setNewCapturedCount] = useState(50)
   const [deliveredCount, setDeliveredCount] = useState(50)
+  const [showNoInstagram, setShowNoInstagram] = useState(false)
 
   // Extract leads array from response
   const data = leadsResponse?.items || []
@@ -181,6 +182,9 @@ export default function LeadsPage() {
 
   // Extract no response leads
   const noResponseLeads = data.filter((lead) => lead.status_pipeline === "NO_RESPONSE")
+
+  // Extract leads with Instagram Not Found status (searched but not found)
+  const noInstagramLeads = data.filter((lead) => lead.status_pipeline === "INSTAGRAM_NOT_FOUND")
 
   return (
     <div className="space-y-6">
@@ -324,6 +328,37 @@ export default function LeadsPage() {
                     {lead.suburb && <p className="text-xs text-slate-500">{lead.suburb}</p>}
                   </div>
                   <span className="text-2xl">⏳</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* No Instagram Founded Section */}
+      {noInstagramLeads.length > 0 && (
+        <div className="mt-8 border-t pt-6">
+          <button
+            onClick={() => setShowNoInstagram(!showNoInstagram)}
+            className="flex items-center gap-2 text-slate-700 font-semibold hover:text-slate-800 transition-colors"
+          >
+            {showNoInstagram ? "▼" : "▶"} 📱 No Instagram Founded ({noInstagramLeads.length}) - {showNoInstagram ? "Hide" : "Show"}
+          </button>
+
+          {showNoInstagram && (
+            <div className="mt-4 space-y-2 bg-slate-50 border border-slate-300 rounded-lg p-4">
+              {noInstagramLeads.map((lead) => (
+                <div
+                  key={lead.id}
+                  className="flex items-center justify-between p-3 bg-white rounded border border-slate-200 hover:shadow-sm transition-shadow cursor-pointer"
+                  onClick={() => window.location.href = `/dashboard/leads/${lead.id}`}
+                >
+                  <div className="flex-1">
+                    <p className="font-medium text-slate-900">{lead.business_name}</p>
+                    {lead.suburb && <p className="text-xs text-slate-500">{lead.suburb}</p>}
+                    {lead.phone && <p className="text-xs text-slate-500">📞 {lead.phone}</p>}
+                  </div>
+                  <span className="text-2xl">📱</span>
                 </div>
               ))}
             </div>

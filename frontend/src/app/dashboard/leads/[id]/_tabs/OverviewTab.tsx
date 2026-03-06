@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { useUpdateLead } from "@/hooks/useLeads"
+import { useUpdateLead, useMoveLead } from "@/hooks/useLeads"
 import { useQueryClient } from "@tanstack/react-query"
 import { Lead } from "@/types/index"
 
@@ -15,6 +15,7 @@ export default function OverviewTab({ lead, onSaved, onError }: OverviewTabProps
   const [isDirty, setIsDirty] = useState(false)
   const [searchingInstagram, setSearchingInstagram] = useState(false)
   const updateLead = useUpdateLead(lead.id)
+  const moveLead = useMoveLead()
   const qc = useQueryClient()
 
   const handleChange = (field: string, value: string) => {
@@ -59,7 +60,18 @@ export default function OverviewTab({ lead, onSaved, onError }: OverviewTabProps
       } else if (!result.success && result.candidates && result.candidates.length > 0) {
         onError(`Encontrados ${result.candidates.length} perfil(is), mas sem match exato. Verifique manualmente.`)
       } else {
-        onError(`Não encontrado: ${result.error}`)
+        // Não encontrou - mover para INSTAGRAM_NOT_FOUND
+        moveLead.mutate(
+          { id: lead.id, new_status: "INSTAGRAM_NOT_FOUND" },
+          {
+            onSuccess: () => {
+              onError(`📱 Não encontrado. Lead movido para "No Instagram Founded" tab para busca manual.`)
+            },
+            onError: () => {
+              onError(`Não encontrado: ${result.error}`)
+            },
+          }
+        )
       }
     } catch (error) {
       onError("Erro ao buscar Instagram")

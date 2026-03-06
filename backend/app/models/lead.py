@@ -24,6 +24,7 @@ class PipelineStatus(str, enum.Enum):
     WON = "WON"
     LOST = "LOST"
     NO_RESPONSE = "NO_RESPONSE"
+    INSTAGRAM_NOT_FOUND = "INSTAGRAM_NOT_FOUND"
     ARCHIVED = "ARCHIVED"
 
 
