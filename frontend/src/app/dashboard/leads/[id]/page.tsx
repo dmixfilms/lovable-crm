@@ -59,7 +59,7 @@ export default function LeadDetailPage({
       onSuccess: (data) => {
         setToast({ message: "Abrindo Lovable para criar o website...", type: "success" })
         // Open directly
-        window.open(data.lovable_url, "_blank")
+        window.open(data.lovable_url, "_self")
       },
       onError: (error) => {
         console.error("Error generating Lovable URL:", error)

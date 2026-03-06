@@ -66,7 +66,7 @@ export default function KanbanCard({ lead, index, onToast, onSelectLead }: Kanba
     generateLovableUrl.mutate({ id: lead.id, prompt: renderedPrompt }, {
       onSuccess: (data) => {
         onToast?.("🎨 Lovable aberto! Crie a preview do website...", "success")
-        window.open(data.lovable_url, "_blank")
+        window.open(data.lovable_url, "_self")
         // Move to PREVIEW_PENDING after opening Lovable
         moveLead.mutate({ id: lead.id, new_status: "PREVIEW_PENDING" })
       },

@@ -73,7 +73,7 @@ export default function LeadDetailModal({
     generateLovableUrl.mutate({ id: leadId, prompt: renderedPrompt }, {
       onSuccess: (data) => {
         setToast({ message: "Abrindo Lovable para criar o website...", type: "success" })
-        window.open(data.lovable_url, "_blank")
+        window.open(data.lovable_url, "_self")
       },
       onError: (error) => {
         console.error("Error generating Lovable URL:", error)
