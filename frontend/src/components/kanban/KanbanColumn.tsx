@@ -9,9 +9,12 @@ interface KanbanColumnProps {
   leads: Lead[]
   onToast?: (message: string, type: "success" | "error") => void
   onSelectLead?: (lead: Lead) => void
+  totalLeads?: number
+  isLoadMoreVisible?: boolean
+  onLoadMore?: () => void
 }
 
-export default function KanbanColumn({ status, displayName, leads, onToast, onSelectLead }: KanbanColumnProps) {
+export default function KanbanColumn({ status, displayName, leads, onToast, onSelectLead, totalLeads = 0, isLoadMoreVisible = false, onLoadMore }: KanbanColumnProps) {
   return (
     <Droppable droppableId={status}>
       {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
@@ -32,6 +35,14 @@ export default function KanbanColumn({ status, displayName, leads, onToast, onSe
             {leads.map((lead, index) => (
               <KanbanCard key={lead.id} lead={lead} index={index} onToast={onToast} onSelectLead={onSelectLead} />
             ))}
+            {isLoadMoreVisible && (
+              <button
+                onClick={onLoadMore}
+                className="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors font-medium text-sm"
+              >
+                +50 mais ({leads.length}/{totalLeads})
+              </button>
+            )}
           </div>
           {provided.placeholder}
         </div>

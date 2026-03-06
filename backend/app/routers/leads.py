@@ -72,6 +72,7 @@ def update_lead(
 def move_lead_to_stage(
     lead_id: str,
     new_status: str = Query(...),
+    data: Optional[LeadUpdate] = Body(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -80,6 +81,13 @@ def move_lead_to_stage(
     lead = service.move_to_stage(lead_id, new_status, actor_id=current_user.id)
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found or invalid status")
+
+    # If data with status_reason is provided, update it
+    if data and data.status_reason:
+        lead.status_reason = data.status_reason
+        db.commit()
+        db.refresh(lead)
+
     return lead
 
 

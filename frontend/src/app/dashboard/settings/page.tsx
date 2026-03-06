@@ -5,6 +5,11 @@ import { getLovablePrompt, saveLovablePrompt, getDefaultLovablePrompt } from "@/
 import { useSettings, useUpdateSettings, type AppSettingsUpdate } from "@/hooks/useSettings"
 import Toast from "@/components/ui/Toast"
 
+interface InstagramStatus {
+  authenticated: boolean
+  status: string
+}
+
 export default function SettingsPage() {
   const { data: settings, isLoading } = useSettings()
   const updateSettings = useUpdateSettings()
@@ -13,12 +18,74 @@ export default function SettingsPage() {
   const [lovablePrompt, setLovablePrompt] = useState("")
   const [formData, setFormData] = useState<AppSettingsUpdate>({})
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null)
+  const [instagramStatus, setInstagramStatus] = useState<InstagramStatus | null>(null)
+  const [instagramLoading, setInstagramLoading] = useState(false)
+  const [checkingInstagram, setCheckingInstagram] = useState(true)
 
   useEffect(() => {
     // Load prompt from localStorage on mount
     const prompt = getLovablePrompt()
     setLovablePrompt(prompt)
+
+    // Check Instagram status
+    checkInstagramStatus()
   }, [])
+
+  const checkInstagramStatus = async () => {
+    try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null
+      const response = await fetch("/api/proxy/leads/instagram/status", {
+        method: "GET",
+        headers: {
+          ...(token && { "Authorization": `Bearer ${token}` }),
+        },
+      })
+      const data = await response.json()
+      setInstagramStatus(data)
+    } catch (error) {
+      console.error("Failed to check Instagram status:", error)
+      setInstagramStatus({ authenticated: false, status: "unknown" })
+    } finally {
+      setCheckingInstagram(false)
+    }
+  }
+
+  const handleConnectInstagram = async () => {
+    setInstagramLoading(true)
+    try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null
+      const response = await fetch("/api/proxy/leads/instagram/init-login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { "Authorization": `Bearer ${token}` }),
+        },
+      })
+      const result = await response.json()
+
+      if (result.success) {
+        setToast({
+          message: "✅ Instagram conectado com sucesso!",
+          type: "success",
+        })
+        // Refresh status
+        await checkInstagramStatus()
+      } else {
+        setToast({
+          message: `❌ Erro: ${result.message || "Não foi possível conectar"}`,
+          type: "error",
+        })
+      }
+    } catch (error) {
+      setToast({
+        message: "❌ Erro ao conectar Instagram",
+        type: "error",
+      })
+      console.error("Error connecting Instagram:", error)
+    } finally {
+      setInstagramLoading(false)
+    }
+  }
 
   useEffect(() => {
     // Load settings into form
@@ -305,6 +372,43 @@ export default function SettingsPage() {
                 onChange={(e) => handleInputChange("target_profit_margin", parseFloat(e.target.value))}
                 className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-slate-200 pt-6">
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">📱 Instagram Integration</h2>
+          <div className="space-y-4">
+            <div className="bg-slate-50 p-4 rounded-lg">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-sm font-medium text-slate-700 mb-1">Status da Conexão</p>
+                  <p className="text-sm text-slate-600">
+                    {checkingInstagram ? (
+                      "Verificando..."
+                    ) : instagramStatus?.authenticated ? (
+                      <span className="text-green-600 font-medium">✅ Conectado ao Instagram</span>
+                    ) : (
+                      <span className="text-slate-600">Não conectado</span>
+                    )}
+                  </p>
+                </div>
+                <button
+                  onClick={handleConnectInstagram}
+                  disabled={instagramLoading || (instagramStatus?.authenticated ?? false)}
+                  title={instagramStatus?.authenticated ? "Já conectado" : "Clique para conectar sua conta Instagram"}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    instagramStatus?.authenticated
+                      ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                      : "bg-pink-600 text-white hover:bg-pink-700 disabled:bg-gray-400"
+                  }`}
+                >
+                  {instagramLoading ? "🔄 Conectando..." : instagramStatus?.authenticated ? "✓ Conectado" : "🔐 Conectar Instagram"}
+                </button>
+              </div>
+              <p className="text-xs text-slate-500">
+                Conecte sua conta do Instagram para buscar automaticamente perfis de negócios ao procurar por leads.
+              </p>
             </div>
           </div>
         </div>

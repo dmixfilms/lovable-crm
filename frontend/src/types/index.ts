@@ -27,6 +27,7 @@ export interface Lead {
   status_pipeline: string
   owner_name?: string
   notes?: string
+  status_reason?: string
   created_at: string
   updated_at: string
   status_changed_at: string

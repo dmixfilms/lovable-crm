@@ -7,7 +7,6 @@ import KanbanColumn from "@/components/kanban/KanbanColumn"
 import PreviewExpiryBanner from "@/components/kanban/PreviewExpiryBanner"
 import SearchLeadsModal from "@/components/leads/SearchLeadsModal"
 import LeadDetailModal from "@/components/leads/LeadDetailModal"
-import ConfirmDialog from "@/components/ui/ConfirmDialog"
 import Toast from "@/components/ui/Toast"
 import { Lead } from "@/types/index"
 
@@ -34,6 +33,8 @@ const STATUS_DISPLAY_NAMES: Record<string, string> = {
   "PRICE_SENT": "SENT PRICE",
   "PAYMENT_SENT": "SENT CONFIRMATION",
   "DELIVERED": "DONE",
+  "REJECTED": "Rejeitados",
+  "NO_RESPONSE": "Sem Resposta",
 }
 
 export default function LeadsPage() {
@@ -41,18 +42,17 @@ export default function LeadsPage() {
   const moveLead = useMoveLead()
   const kanbanContainerRef = useRef<HTMLDivElement>(null)
 
-  const [confirmMove, setConfirmMove] = useState<{
-    leadId: string
-    targetStatus: string
-    sourceStatus: string
-  } | null>(null)
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null)
   const [showArchived, setShowArchived] = useState(false)
+  const [showRejected, setShowRejected] = useState(false)
+  const [showNoResponse, setShowNoResponse] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
   const [isDraggingKanban, setIsDraggingKanban] = useState(false)
   const [dragStartX, setDragStartX] = useState(0)
   const [scrollLeft, setScrollLeft] = useState(0)
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null)
+  const [newCapturedCount, setNewCapturedCount] = useState(50)
+  const [deliveredCount, setDeliveredCount] = useState(50)
 
   // Extract leads array from response
   const data = leadsResponse?.items || []
@@ -79,17 +79,10 @@ export default function LeadsPage() {
 
     const leadId = draggableId
     const targetStatus = destination.droppableId
-    const sourceStatus = source.droppableId
 
-    // Open confirmation dialog
-    setConfirmMove({ leadId, targetStatus, sourceStatus })
-  }
-
-  const handleConfirmMove = () => {
-    if (!confirmMove) return
-
+    // Move lead directly without confirmation
     moveLead.mutate(
-      { id: confirmMove.leadId, new_status: confirmMove.targetStatus },
+      { id: leadId, new_status: targetStatus },
       {
         onError: () => {
           setToast({ message: "Failed to move lead", type: "error" })
@@ -99,12 +92,8 @@ export default function LeadsPage() {
         },
       }
     )
-    setConfirmMove(null)
   }
 
-  const handleCancelMove = () => {
-    setConfirmMove(null)
-  }
 
   const handleCardToast = (message: string, type: "success" | "error") => {
     setToast({ message, type })
@@ -173,13 +162,25 @@ export default function LeadsPage() {
     )
   }
 
-  const columnsData = ACTIVE_STATUSES.map((status) => ({
-    status,
-    leads: columns[status] || [],
-  }))
+  const columnsData = ACTIVE_STATUSES.map((status) => {
+    let leads = columns[status] || []
+    // Limit NEW_CAPTURED and DELIVERED to show only requested count
+    if (status === "NEW_CAPTURED") {
+      leads = leads.slice(0, newCapturedCount)
+    } else if (status === "DELIVERED") {
+      leads = leads.slice(0, deliveredCount)
+    }
+    return { status, leads }
+  })
 
   // Extract archived leads (LOW_PRIORITY / Good Site)
   const archivedLeads = data.filter((lead) => lead.status_pipeline === "LOW_PRIORITY")
+
+  // Extract rejected leads
+  const rejectedLeads = data.filter((lead) => lead.status_pipeline === "REJECTED")
+
+  // Extract no response leads
+  const noResponseLeads = data.filter((lead) => lead.status_pipeline === "NO_RESPONSE")
 
   return (
     <div className="space-y-6">
@@ -210,28 +211,35 @@ export default function LeadsPage() {
           onMouseLeave={handleMouseLeave}
           style={{ userSelect: isDraggingKanban ? "none" : "auto" }}
         >
-          {columnsData.map((column) => (
-            <KanbanColumn
-              key={column.status}
-              status={column.status}
-              displayName={STATUS_DISPLAY_NAMES[column.status]}
-              leads={column.leads}
-              onToast={handleCardToast}
-              onSelectLead={handleSelectLead}
-            />
-          ))}
+          {columnsData.map((column) => {
+            const totalLeads = columns[column.status]?.length || 0
+            const isLoadMoreVisible =
+              (column.status === "NEW_CAPTURED" && newCapturedCount < totalLeads) ||
+              (column.status === "DELIVERED" && deliveredCount < totalLeads)
+
+            return (
+              <KanbanColumn
+                key={column.status}
+                status={column.status}
+                displayName={STATUS_DISPLAY_NAMES[column.status]}
+                leads={column.leads}
+                onToast={handleCardToast}
+                onSelectLead={handleSelectLead}
+                totalLeads={totalLeads}
+                isLoadMoreVisible={isLoadMoreVisible}
+                onLoadMore={() => {
+                  if (column.status === "NEW_CAPTURED") {
+                    setNewCapturedCount(prev => prev + 50)
+                  } else if (column.status === "DELIVERED") {
+                    setDeliveredCount(prev => prev + 50)
+                  }
+                }}
+              />
+            )
+          })}
         </div>
       </DragDropContext>
 
-      <ConfirmDialog
-        open={!!confirmMove}
-        title="Move Lead"
-        message={`Move this lead to ${confirmMove?.targetStatus.replace(/_/g, " ")}?`}
-        confirmLabel="Move"
-        cancelLabel="Cancel"
-        onConfirm={handleConfirmMove}
-        onCancel={handleCancelMove}
-      />
 
       {/* Archived Leads Section */}
       {archivedLeads.length > 0 && (
@@ -256,6 +264,66 @@ export default function LeadsPage() {
                     {lead.suburb && <p className="text-xs text-slate-500">{lead.suburb}</p>}
                   </div>
                   <span className="text-2xl">✅</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Rejected Leads Section */}
+      {rejectedLeads.length > 0 && (
+        <div className="mt-8 border-t pt-6">
+          <button
+            onClick={() => setShowRejected(!showRejected)}
+            className="flex items-center gap-2 text-orange-700 font-semibold hover:text-orange-800 transition-colors"
+          >
+            {showRejected ? "▼" : "▶"} ❌ Rejeitados ({rejectedLeads.length}) - {showRejected ? "Hide" : "Show"}
+          </button>
+
+          {showRejected && (
+            <div className="mt-4 space-y-2 bg-orange-50 border border-orange-200 rounded-lg p-4">
+              {rejectedLeads.map((lead) => (
+                <div
+                  key={lead.id}
+                  className="flex items-center justify-between p-3 bg-white rounded border border-orange-100 hover:shadow-sm transition-shadow cursor-pointer"
+                  onClick={() => window.location.href = `/dashboard/leads/${lead.id}`}
+                >
+                  <div className="flex-1">
+                    <p className="font-medium text-slate-900">{lead.business_name}</p>
+                    {lead.suburb && <p className="text-xs text-slate-500">{lead.suburb}</p>}
+                  </div>
+                  <span className="text-2xl">❌</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* No Response Leads Section */}
+      {noResponseLeads.length > 0 && (
+        <div className="mt-8 border-t pt-6">
+          <button
+            onClick={() => setShowNoResponse(!showNoResponse)}
+            className="flex items-center gap-2 text-yellow-700 font-semibold hover:text-yellow-800 transition-colors"
+          >
+            {showNoResponse ? "▼" : "▶"} ⏳ Sem Resposta ({noResponseLeads.length}) - {showNoResponse ? "Hide" : "Show"}
+          </button>
+
+          {showNoResponse && (
+            <div className="mt-4 space-y-2 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              {noResponseLeads.map((lead) => (
+                <div
+                  key={lead.id}
+                  className="flex items-center justify-between p-3 bg-white rounded border border-yellow-100 hover:shadow-sm transition-shadow cursor-pointer"
+                  onClick={() => window.location.href = `/dashboard/leads/${lead.id}`}
+                >
+                  <div className="flex-1">
+                    <p className="font-medium text-slate-900">{lead.business_name}</p>
+                    {lead.suburb && <p className="text-xs text-slate-500">{lead.suburb}</p>}
+                  </div>
+                  <span className="text-2xl">⏳</span>
                 </div>
               ))}
             </div>

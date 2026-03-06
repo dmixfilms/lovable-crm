@@ -1,4 +1,5 @@
 "use client"
+import { useState } from "react"
 import { Draggable } from "@hello-pangea/dnd"
 import { Lead } from "@/types/index"
 import { useRouter } from "next/navigation"
@@ -20,6 +21,8 @@ export default function KanbanCard({ lead, index, onToast, onSelectLead }: Kanba
   const pendingTasks = Array.isArray(tasks) ? tasks.filter((t: any) => !t.is_done) : []
   const moveLead = useMoveLead()
   const generateLovableUrl = useGenerateLovableUrl()
+  const [noResponseModalOpen, setNoResponseModalOpen] = useState(false)
+  const [noResponseReason, setNoResponseReason] = useState("")
 
   // Check if card was recently moved (last 5 minutes)
   const isReccentlyMoved = () => {
@@ -137,7 +140,27 @@ export default function KanbanCard({ lead, index, onToast, onSelectLead }: Kanba
     handleMoveStatus("PREVIEW_CREATED", "✨ Preview pronto!")
   }
 
+  const handleNoResponse = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setNoResponseModalOpen(true)
+  }
+
+  const handleConfirmNoResponse = () => {
+    // Update lead with reason and move to NO_RESPONSE
+    moveLead.mutate({ id: lead.id, new_status: "NO_RESPONSE", reason: noResponseReason }, {
+      onSuccess: () => {
+        onToast?.(`⏳ Marcado como sem resposta`, "success")
+        setNoResponseModalOpen(false)
+        setNoResponseReason("")
+      },
+      onError: () => {
+        onToast?.("Erro ao marcar como sem resposta", "error")
+      },
+    })
+  }
+
   return (
+    <>
     <Draggable draggableId={lead.id} index={index}>
       {(provided, snapshot) => (
         <div
@@ -181,6 +204,21 @@ export default function KanbanCard({ lead, index, onToast, onSelectLead }: Kanba
               <div className="inline-flex bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-[10px] max-w-[95%]">
                 <span className="truncate">{lead.notes}</span>
               </div>
+            </div>
+          )}
+
+          {/* Instagram Founded Badge */}
+          {lead.instagram_url && (
+            <div className="mb-2">
+              <a
+                href={lead.instagram_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-1 bg-gradient-to-r from-pink-100 to-purple-100 text-pink-700 hover:from-pink-200 hover:to-purple-200 px-2 py-1 rounded text-[10px] font-semibold transition-colors"
+              >
+                📱 Instagram Founded
+              </a>
             </div>
           )}
 
@@ -235,25 +273,45 @@ export default function KanbanCard({ lead, index, onToast, onSelectLead }: Kanba
             )}
 
             {lead.status_pipeline === "PREVIEW_CREATED" && (
-              <button
-                onClick={handleSendSample}
-                disabled={moveLead.isPending}
-                className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 disabled:bg-gray-200 transition-colors font-medium flex-1 min-w-max"
-                title="Enviar sample e abrir chat"
-              >
-                💬 Sample →
-              </button>
+              <>
+                <button
+                  onClick={handleSendSample}
+                  disabled={moveLead.isPending}
+                  className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 disabled:bg-gray-200 transition-colors font-medium flex-1 min-w-max"
+                  title="Enviar sample e abrir chat"
+                >
+                  💬 Sample →
+                </button>
+                <button
+                  onClick={handleNoResponse}
+                  disabled={moveLead.isPending}
+                  className="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200 disabled:bg-gray-200 transition-colors font-medium"
+                  title="Marcar como sem resposta"
+                >
+                  ⏳
+                </button>
+              </>
             )}
 
             {lead.status_pipeline === "SAMPLE_SENT" && (
-              <button
-                onClick={handleSendPrice}
-                disabled={moveLead.isPending}
-                className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded hover:bg-amber-200 disabled:bg-gray-200 transition-colors font-medium flex-1 min-w-max"
-                title="Enviar preço"
-              >
-                💰 Preço →
-              </button>
+              <>
+                <button
+                  onClick={handleSendPrice}
+                  disabled={moveLead.isPending}
+                  className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded hover:bg-amber-200 disabled:bg-gray-200 transition-colors font-medium flex-1 min-w-max"
+                  title="Enviar preço"
+                >
+                  💰 Preço →
+                </button>
+                <button
+                  onClick={handleNoResponse}
+                  disabled={moveLead.isPending}
+                  className="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200 disabled:bg-gray-200 transition-colors font-medium"
+                  title="Marcar como sem resposta"
+                >
+                  ⏳
+                </button>
+              </>
             )}
 
             {lead.status_pipeline === "PRICE_SENT" && (
@@ -292,5 +350,44 @@ export default function KanbanCard({ lead, index, onToast, onSelectLead }: Kanba
         </div>
       )}
     </Draggable>
+
+    {/* No Response Modal - Outside Draggable */}
+    {noResponseModalOpen && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg shadow-lg max-w-md w-full">
+          <div className="p-6">
+            <h2 className="text-lg font-bold text-slate-900 mb-2">⏳ Lead Sem Resposta</h2>
+            <p className="text-slate-600 mb-4 text-sm">Por que este lead não respondeu?</p>
+
+            <textarea
+              value={noResponseReason}
+              onChange={(e) => setNoResponseReason(e.target.value)}
+              placeholder="ex: Não respondeu ao WhatsApp, Email ignorado, Ligação não atendida..."
+              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 mb-4 resize-none h-24 text-sm"
+            />
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setNoResponseModalOpen(false)
+                  setNoResponseReason("")
+                }}
+                className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors font-medium text-sm"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmNoResponse}
+                disabled={moveLead.isPending || !noResponseReason.trim()}
+                className="flex-1 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:bg-gray-400 transition-colors font-medium text-sm"
+              >
+                {moveLead.isPending ? "Salvando..." : "Confirmar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   )
 }

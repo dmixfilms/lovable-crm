@@ -98,6 +98,31 @@ export default function LeadDetailPage({
         <span className="text-slate-600">{lead.business_name}</span>
       </div>
 
+      {/* Status Alerts */}
+      {lead.status_pipeline === "NO_RESPONSE" && (
+        <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4 flex items-center gap-3">
+          <span className="text-2xl">⏳</span>
+          <div className="flex-1">
+            <p className="font-semibold text-yellow-900">Lead Sem Resposta</p>
+            <p className="text-sm text-yellow-800">
+              {lead.status_reason ? lead.status_reason : "Este lead ainda não respondeu após o contato inicial."}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {lead.status_pipeline === "REJECTED" && (
+        <div className="bg-orange-50 border-2 border-orange-300 rounded-lg p-4 flex items-center gap-3">
+          <span className="text-2xl">❌</span>
+          <div className="flex-1">
+            <p className="font-semibold text-orange-900">Lead Rejeitado</p>
+            <p className="text-sm text-orange-800">
+              {lead.status_reason ? lead.status_reason : "Este lead não tem interesse ou recusou o serviço."}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-white rounded-lg shadow p-6 border-l-4 border-purple-600">
         <div className="flex items-start justify-between mb-4">

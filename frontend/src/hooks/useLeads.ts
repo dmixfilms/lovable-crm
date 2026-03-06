@@ -43,8 +43,9 @@ export function useUpdateLead(id: string) {
 export function useMoveLead() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async ({ id, new_status }: { id: string; new_status: string }) => {
-      const { data } = await api.patch(`/leads/${id}/move`, {}, { params: { new_status } })
+    mutationFn: async ({ id, new_status, reason }: { id: string; new_status: string; reason?: string }) => {
+      const payload = reason ? { status_reason: reason } : {}
+      const { data } = await api.patch(`/leads/${id}/move`, payload, { params: { new_status } })
       return data as Lead
     },
     onSuccess: () => {

@@ -30,6 +30,7 @@ class LeadUpdate(BaseModel):
     owner_name: Optional[str] = None
     notes: Optional[str] = None
     status_pipeline: Optional[str] = None
+    status_reason: Optional[str] = None
 
 
 class LeadResponse(BaseModel):
@@ -46,6 +47,7 @@ class LeadResponse(BaseModel):
     status_pipeline: str
     owner_name: Optional[str]
     notes: Optional[str]
+    status_reason: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     active_preview: Optional[ActivePreviewSummary] = None

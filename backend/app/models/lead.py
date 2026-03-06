@@ -47,6 +47,7 @@ class Lead(Base):
     status_pipeline = Column(Enum(PipelineStatus), default=PipelineStatus.NEW_CAPTURED, index=True, nullable=False)
     owner_name = Column(String(255))
     notes = Column(Text)
+    status_reason = Column(Text)  # Reason for rejection or no response
     created_at = Column(DateTime, server_default=func.now(), nullable=False, index=True)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
     status_changed_at = Column(DateTime, server_default=func.now(), nullable=False, index=True)

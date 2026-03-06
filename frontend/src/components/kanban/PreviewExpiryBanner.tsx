@@ -11,12 +11,15 @@ export default function PreviewExpiryBanner({ leads }: PreviewExpiryBannerProps)
   const router = useRouter()
 
   // Filter leads with expiring previews (non-archived, expiring within 2 days or expired)
+  // Exclude leads that are rejected or have no response
   const expiringPreviews = leads
     .filter(
       (lead) =>
         lead.active_preview &&
         !lead.active_preview.is_archived &&
-        getPreviewDaysLeft(lead.active_preview) <= 2
+        getPreviewDaysLeft(lead.active_preview) <= 2 &&
+        lead.status_pipeline !== "REJECTED" &&
+        lead.status_pipeline !== "NO_RESPONSE"
     )
     .map((lead) => ({
       lead,
